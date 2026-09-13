@@ -89,19 +89,19 @@ const TEE_PRICE = 4900;
 // Key: <slug>__<garment>__<colour slug>; value: size -> Printful sync_variant_id.
 const PRINTFUL_VARIANTS: Record<string, Record<string, number>> = {
   "lumbridge-general-store__hoodie__black": {
-    "S": 5497826523,
-    "M": 5497826524,
-    "L": 5497826525,
-    "XL": 5497826526,
-    "2XL": 5497826527
+    "S": 5497829767,
+    "M": 5497829768,
+    "L": 5497829769,
+    "XL": 5497829770,
+    "2XL": 5497829771
   },
   "lumbridge-general-store__tee__black": {
-    "S": 5497826528,
-    "M": 5497826529,
-    "L": 5497826530,
-    "XL": 5497826531,
-    "2XL": 5497826532,
-    "3XL": 5497826533
+    "S": 5497829775,
+    "M": 5497829776,
+    "L": 5497829777,
+    "XL": 5497829778,
+    "2XL": 5497829779,
+    "3XL": 5497829780
   },
   "blue-moon-inn__hoodie__charcoal": {
     "S": 5497826540,

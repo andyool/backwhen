@@ -17,6 +17,7 @@
 //   Or give catalog ids directly: PRINTFUL_HOODIE_ID=123 PRINTFUL_TEE_ID=456
 
 import fs from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -30,6 +31,13 @@ if (process.env.PRINTFUL_STORE_ID) headers["X-PF-Store-Id"] = process.env.PRINTF
 
 const BASE = "https://api.printful.com";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Printful caches downloaded files by URL, so a replaced design at the same
+// address would silently keep the old artwork. Tag the URL with the file hash.
+async function versioned(url, localPath) {
+  const hash = createHash("md5").update(await fs.readFile(localPath)).digest("hex").slice(0, 10);
+  return `${url}?v=${hash}`;
+}
 
 async function api(method, p, body) {
   for (let attempt = 0; attempt < 6; attempt++) {
@@ -165,7 +173,7 @@ for (const product of wanted) {
     console.log(`\n${product.slug}: no print file in public/artwork/print — run scripts/prepare-artwork.mjs first. Skipped.`);
     continue;
   }
-  const imageUrl = `${baseUrl}/${product.slug}.png`;
+  const imageUrl = await versioned(`${baseUrl}/${product.slug}.png`, printFile);
   const img = pngSize(await fs.readFile(printFile));
 
   for (const g of product.garments) {

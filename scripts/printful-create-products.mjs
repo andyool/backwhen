@@ -10,6 +10,7 @@
 //     node scripts/printful-create-products.mjs [slug ...]
 
 import fs from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -29,6 +30,13 @@ if (!baseUrl.startsWith("http")) {
 const headers = { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "X-PF-Store-Id": storeId };
 const BASE = "https://api.printful.com";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Printful caches downloaded files by URL, so a replaced design at the same
+// address would silently keep the old artwork. Tag the URL with the file hash.
+async function versioned(url, localPath) {
+  const hash = createHash("md5").update(await fs.readFile(localPath)).digest("hex").slice(0, 10);
+  return `${url}?v=${hash}`;
+}
 
 async function api(method, p, body) {
   for (let attempt = 0; attempt < 6; attempt++) {
@@ -96,7 +104,7 @@ for (const product of wanted) {
     console.log(`\n${product.slug}: no print file, skipped (still "coming soon")`);
     continue;
   }
-  const fileUrl = `${baseUrl}/${product.slug}.png`;
+  const fileUrl = await versioned(`${baseUrl}/${product.slug}.png`, printFile);
 
   for (const g of product.garments) {
     const externalId = `${product.slug}__${g.type}__${g.colour.slug}`;
