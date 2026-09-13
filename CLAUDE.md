@@ -8,8 +8,8 @@ You are continuing a custom e-commerce storefront that was designed and scaffold
 A nostalgia apparel brand selling hoodies and tees printed with in-world businesses and locations from
 old games — the Lumbridge General Store, the Blue Moon Inn, the Seyda Neen Census & Excise Office — drawn
 as vintage one-colour engraved shop signs so they pass as real lumber-mill / mountain-lodge merch to
-anyone who doesn't know. No logos, no characters, no box art. Working brand name: **Elsewhere Supply Co.**
-(placeholder; everything brand-related is in `src/lib/site.ts`).
+anyone who doesn't know. No logos, no characters, no box art. Brand name: **Backwhen**
+(everything brand-related is in `src/lib/site.ts`).
 
 Owner: Andreas, a teacher in Western Australia running this alongside a full-time job. Optimise for
 "runs itself" over "feature-rich".
@@ -42,6 +42,16 @@ Do not suggest moving to Shopify. Do not add a database unless a feature genuine
   (`.display`, `.display-soft`, `.sign`, `.small` in `globals.css`). Do not add a second font.
 - No cards, no drop shadows, no borders as decoration, no gradient washes, no icons for their own sake,
   no ALL-CAPS eyebrow labels, no "→" on links. Images bleed; spacing does the structure.
+- Motion layer (added 2026-09-13 at the owner's request — keep it, extend it in the same idiom):
+  everything lives in `src/components/fx/` and `globals.css`, no animation libraries.
+  `Fog` (WebGL contour-line field behind the hero and 404), `SplitText` + `RevealObserver`
+  (`data-reveal` attribute + `--d` delay drives every scroll reveal, server components included),
+  `Tilt` and the `.curtain` image reveal on product cards, `Magnetic` buttons, `Marquee`, `DrawSign`
+  (engraved inn drawn on scroll), `Counter`, `Parallax`, `SmoothScroll` (inertial wheel, native on
+  touch), `Preloader` (once per
+  session), `template.tsx` page wipe, film grain via `body::after`. All of it respects
+  `prefers-reduced-motion`. `SignArt` renders a generated engraved-sign mock-up on the garment colour
+  whenever the artwork PNG is missing (`src/lib/art.ts` checks the disk server-side).
 - Copy voice: dry outfitter's catalogue. "Ales, beds, poor company." Errors explain and direct, never
   apologise. Buttons say what happens ("Pay with card", "Add to cart").
 - Mobile first: most traffic will come from Instagram ads on phones.
@@ -74,7 +84,10 @@ Do not suggest moving to Shopify. Do not add a database unless a feature genuine
 
 ## Backlog (only when asked)
 
-- Add real artwork PNGs to `public/products/` (naming in that folder's README) and remove placeholder fallback if desired.
+- Generate Printful mockups into `public/products/` with `npm run printful:mockups` once the site is
+  deployed (needs a public URL for `public/artwork/print/`). Six RuneScape designs landed 2026-09-13 in
+  `public/artwork/`; the Elder Scrolls six are still to come. Image tiers: Printful mockup → composited
+  print file (`GarmentMock`) → generated `SignArt`.
 - Fill `variantIds` from `npm run printful:variants` once Printful products exist.
 - Branded order/shipping emails (Resend) — Stripe's receipt and Printful's tracking email cover it for launch.
 - Size guide table on the product page (measurements from the Printful/AS Colour spec).

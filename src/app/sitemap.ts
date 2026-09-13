@@ -2,6 +2,9 @@ import type { MetadataRoute } from "next";
 import { collections, products } from "@/lib/products";
 import { siteUrl } from "@/lib/site";
 
+// Needed for the static GitHub Pages export; harmless on a Node host.
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = siteUrl();
   return [

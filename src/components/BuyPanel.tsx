@@ -48,7 +48,7 @@ export default function BuyPanel({ product, onGarmentChange }: { product: Produc
                 type="button"
                 onClick={() => choose(index)}
                 aria-pressed={active}
-                className={`rounded-[2px] px-4 py-2 text-[15px] ${
+                className={`pop rounded-[2px] px-4 py-2 text-[15px] transition-colors duration-300 ${
                   active ? "bg-bone text-charcoal" : "bg-flannel text-bone hover:bg-seam"
                 }`}
               >
@@ -69,7 +69,7 @@ export default function BuyPanel({ product, onGarmentChange }: { product: Produc
                 type="button"
                 onClick={() => choose(i)}
                 aria-pressed={i === garmentIndex}
-                className={`flex items-center gap-2 rounded-[2px] py-1.5 pl-1.5 pr-3 text-[15px] ${
+                className={`pop flex items-center gap-2 rounded-[2px] py-1.5 pl-1.5 pr-3 text-[15px] transition-colors duration-300 ${
                   i === garmentIndex ? "bg-bone text-charcoal" : "bg-flannel text-bone hover:bg-seam"
                 }`}
               >
@@ -96,7 +96,7 @@ export default function BuyPanel({ product, onGarmentChange }: { product: Produc
                   setAdded(false);
                 }}
                 aria-pressed={size === s}
-                className={`min-w-[52px] rounded-[2px] px-3 py-2 text-[15px] tabular-nums disabled:cursor-not-allowed disabled:text-faded/40 disabled:line-through ${
+                className={`pop min-w-[52px] rounded-[2px] px-3 py-2 text-[15px] tabular-nums transition-colors duration-300 disabled:cursor-not-allowed disabled:text-faded/40 disabled:line-through ${
                   size === s ? "bg-bone text-charcoal" : "bg-flannel text-bone hover:bg-seam"
                 }`}
               >

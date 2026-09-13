@@ -14,7 +14,7 @@ type Action =
   | { type: "remove"; sku: string }
   | { type: "clear" };
 
-const STORAGE_KEY = "elsewhere-cart-v1";
+const STORAGE_KEY = "backwhen-cart-v1";
 const MAX_QTY = 10;
 
 function reducer(state: State, action: Action): State {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import SplitText from "@/components/fx/SplitText";
 import { zones } from "@/lib/shipping";
 import { money } from "@/lib/format";
 import { site } from "@/lib/site";
@@ -8,8 +9,8 @@ export const metadata: Metadata = { title: "Shipping & returns" };
 export default function ShippingPage() {
   return (
     <div className="mx-auto w-full max-w-page px-5 pt-6 sm:px-8">
-      <h1 className="display text-[44px] sm:text-[60px]">Shipping &amp; returns</h1>
-      <div className="prose-page mt-8">
+      <SplitText as="h1" text="Shipping & returns" className="display block text-[44px] sm:text-[60px]" />
+      <div className="prose-page mt-8" data-reveal style={{ ["--d" as string]: "300ms" }}>
         <h2>Shipping</h2>
         <p>
           Everything is printed after you order it, which takes 2–5 business days. Then it ships from the print house nearest you and you get a tracking email.

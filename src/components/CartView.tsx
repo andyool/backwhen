@@ -3,14 +3,19 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import ProductImage from "./ProductImage";
+import SignArt from "./SignArt";
+import GarmentMock from "./GarmentMock";
+import type { Artwork } from "@/lib/art";
+import { products } from "@/lib/products";
 import { useCart } from "@/lib/cart";
 import { garmentLabel } from "@/lib/products";
 import { money } from "@/lib/format";
 import { allowedCountries, countryNames, shippingFor } from "@/lib/shipping";
+import { isStaticPreview } from "@/lib/paths";
 
-const COUNTRY_KEY = "elsewhere-country";
+const COUNTRY_KEY = "backwhen-country";
 
-export default function CartView() {
+export default function CartView({ artwork }: { artwork: Record<string, Artwork> }) {
   const { lines, subtotalCents, setQty, remove, hydrated, items } = useCart();
   const [country, setCountry] = useState("AU");
   const [busy, setBusy] = useState(false);
@@ -69,9 +74,27 @@ export default function CartView() {
     <div className="grid gap-12 lg:grid-cols-[3fr_2fr] lg:gap-16">
       <ul className="flex flex-col gap-8">
         {lines.map((l) => (
-          <li key={l.sku} className="grid grid-cols-[96px_1fr] gap-5 sm:grid-cols-[128px_1fr]">
+          <li key={l.sku} className="grid grid-cols-[96px_1fr] gap-5 sm:grid-cols-[128px_1fr]" data-reveal>
             <Link href={`/products/${l.product.slug}`}>
-              <ProductImage src={l.garment.image} alt="" sizes="128px" />
+              <ProductImage
+                src={l.garment.image}
+                alt=""
+                sizes="128px"
+                fallback={
+                  artwork[l.product.slug]?.print || artwork[l.product.slug]?.raw ? (
+                    <GarmentMock artwork={artwork[l.product.slug]} colour={l.garment.colour} type={l.garment.type} alt="" sizes="128px" />
+                  ) : (
+                  <SignArt
+                    name={l.product.name}
+                    place={l.product.place}
+                    printLines={l.product.printLines}
+                    colour={l.garment.colour}
+                    type={l.garment.type}
+                    variant={products.findIndex((p) => p.slug === l.product.slug)}
+                  />
+                  )
+                }
+              />
             </Link>
             <div className="flex flex-col">
               <div className="flex items-start justify-between gap-4">
@@ -104,7 +127,7 @@ export default function CartView() {
         ))}
       </ul>
 
-      <aside className="h-fit bg-flannel p-6 sm:p-8 lg:sticky lg:top-8">
+      <aside className="h-fit bg-flannel p-6 sm:p-8 lg:sticky lg:top-28" data-reveal style={{ ["--d" as string]: "150ms" }}>
         <h2 className="text-[22px]">Summary</h2>
 
         <label className="mt-6 block">
@@ -143,9 +166,15 @@ export default function CartView() {
         </dl>
         <p className="small mt-2 text-faded">GST included. {shipping ? `Delivery ${shipping.zone.estimate} after printing.` : ""}</p>
 
-        <button type="button" className="btn-primary mt-6 w-full" onClick={checkout} disabled={busy || !shipping}>
-          {busy ? "Opening secure checkout…" : "Pay with card"}
-        </button>
+        {isStaticPreview ? (
+          <p className="small mt-6 rounded-[2px] bg-charcoal p-4 text-faded">
+            This is the preview build. Card checkout switches on at launch; until then your cart is saved in this browser.
+          </p>
+        ) : (
+          <button type="button" className="btn-primary mt-6 w-full" onClick={checkout} disabled={busy || !shipping}>
+            {busy ? "Opening secure checkout…" : "Pay with card"}
+          </button>
+        )}
         {error && (
           <p className="small mt-3 text-[#E3A28A]" role="alert">
             {error}

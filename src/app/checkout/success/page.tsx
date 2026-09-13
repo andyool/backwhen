@@ -3,6 +3,7 @@ import Link from "next/link";
 import { stripe } from "@/lib/stripe";
 import { money } from "@/lib/format";
 import ClearCart from "./ClearCart";
+import SplitText from "@/components/fx/SplitText";
 
 export const metadata: Metadata = { title: "Order placed" };
 export const dynamic = "force-dynamic";
@@ -33,7 +34,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Sear
     <div className="mx-auto w-full max-w-page px-5 pt-6 sm:px-8">
       {paid && <ClearCart />}
       <div className="max-w-[52ch]">
-        <h1 className="display text-[44px] sm:text-[60px]">{paid ? "On its way to the press." : "Thanks."}</h1>
+        <SplitText as="h1" text={paid ? "On its way to the press." : "Thanks."} className="display block text-[44px] sm:text-[60px]" />
         {paid ? (
           <>
             <p className="mt-6 text-[18px] text-faded">

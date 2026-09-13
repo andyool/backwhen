@@ -1,12 +1,15 @@
 {
-  "name": "elsewhere-supply",
+  "name": "backwhen",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "printful:variants": "node scripts/printful-variants.mjs"
+    "printful:variants": "node scripts/printful-variants.mjs",
+    "artwork:prepare": "node scripts/prepare-artwork.mjs",
+    "printful:mockups": "node scripts/printful-mockups.mjs",
+    "build:static": "node scripts/build-static.mjs"
   },
   "dependencies": {
     "next": "15.3.3",

@@ -1,4 +1,4 @@
-# Elsewhere Supply Co. — storefront
+# Backwhen — storefront
 
 Next.js 15 + Tailwind, Stripe Checkout for payment, Printful for print-on-demand fulfilment.
 No database: the catalogue lives in `src/lib/products.ts`, the cart lives in the shopper's browser,
@@ -19,8 +19,27 @@ cp .env.example .env.local     # fill in the keys
 npm run dev                    # http://localhost:3000
 ```
 
-The site runs without any keys — you just can't check out. Product images fall back to a placeholder
-until you add PNGs to `public/products/` (see the README there for naming).
+The site runs without any keys — you just can't check out.
+
+## Artwork and mockups
+
+Three tiers of product image, best available wins:
+
+1. `public/products/<slug>-<hoodie|tee>-<colour>.png` — a Printful photographic mockup.
+2. `public/artwork/print/<slug>.png` — the transparent print file, composited onto the garment colour
+   by the site (`src/components/GarmentMock.tsx`).
+3. A generated engraved-sign placeholder (`src/components/SignArt.tsx`).
+
+```bash
+# 1. drop raw designs in public/artwork/<slug>.png, then knock the backgrounds out
+npm run artwork:prepare
+
+# 2. once the print files are reachable on a public URL (deploy first), generate Printful mockups
+PRINTFUL_API_KEY=... ARTWORK_BASE_URL=https://yourdomain/artwork/print npm run printful:mockups
+
+# find Printful catalog ids if the AS Colour defaults don't match your store
+PRINTFUL_API_KEY=... npm run printful:mockups -- --list "as colour"
+```
 
 ## Wiring up Stripe
 

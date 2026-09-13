@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductView from "@/components/ProductView";
 import ProductGrid from "@/components/ProductGrid";
+import SplitText from "@/components/fx/SplitText";
+import { artExists, artworkFor } from "@/lib/art";
+import { asset } from "@/lib/paths";
 import { getCollection, getProduct, products, productsIn } from "@/lib/products";
 
 type Params = Promise<{ slug: string }>;
@@ -17,7 +20,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return {
     title: product.name,
     description: `${product.line} ${product.story}`,
-    openGraph: { images: [product.garments[0].image] },
+    openGraph: { images: [asset(product.garments[0].image)] },
   };
 }
 
@@ -29,13 +32,16 @@ export default async function ProductPage({ params }: { params: Params }) {
   if (!collection) notFound();
 
   const more = productsIn(collection.slug).filter((p) => p.slug !== product.slug).slice(0, 3);
+  const hasArt = product.garments.map((g) => artExists(g.image));
+  const variant = products.findIndex((p) => p.slug === product.slug);
+  const artwork = artworkFor(product.slug);
 
   return (
     <>
-      <ProductView product={product} collection={collection} />
+      <ProductView product={product} collection={collection} hasArt={hasArt} variant={variant} artwork={artwork} />
       {more.length > 0 && (
-        <section className="mx-auto mt-24 w-full max-w-page px-5 sm:px-8">
-          <h2 className="mb-8 text-[26px]">Nearby, in {collection.world}</h2>
+        <section className="mx-auto mt-28 w-full max-w-page px-5 sm:px-8">
+          <SplitText as="h2" text={`Nearby, in ${collection.world}`} className="mb-10 block text-[26px] sm:text-[32px]" />
           <ProductGrid products={more} />
         </section>
       )}
