@@ -30,7 +30,7 @@ export default function ProductImage({ src, alt, priority, sizes, className, has
           fill
           priority={priority}
           sizes={sizes ?? "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"}
-          className="card-img-inner object-cover"
+          className="card-img-inner object-contain p-[4%]"
           onError={() => setFailed(true)}
         />
       )}
