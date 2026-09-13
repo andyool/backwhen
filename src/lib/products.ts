@@ -68,13 +68,17 @@ export const collections: Collection[] = [
   },
 ];
 
+// Garment colours as AS Colour names them. Slugs are part of the SKU, so the
+// tee's "Faded black" keeps the slug "black".
 const colours = {
   black: { slug: "black", name: "Black", hex: "#141414", onDark: true },
+  fadedBlack: { slug: "black", name: "Faded black", hex: "#353331", onDark: true },
   charcoal: { slug: "charcoal", name: "Washed charcoal", hex: "#3A3733", onDark: true },
   cream: { slug: "cream", name: "Cream", hex: "#EFE7D3" },
 } satisfies Record<string, Colour>;
 
-const HOODIE_SIZES = ["S", "M", "L", "XL", "2XL", "3XL"];
+// Sizes AS Colour actually makes: 5101 hoodie stops at 2XL, 5082 tee goes to 3XL.
+const HOODIE_SIZES = ["S", "M", "L", "XL", "2XL"];
 const TEE_SIZES = ["S", "M", "L", "XL", "2XL", "3XL"];
 
 const HOODIE_PRICE = 8900;
@@ -117,7 +121,7 @@ export const products: Product[] = [
     story:
       "Every journey started here, usually with a bronze dagger and 25 coins. The shop hasn't changed: thatched roof, barrels by the door, a cow watching from the field, the spire behind. Printed in bone ink on a heavyweight hoodie, with the store name on the chest.",
     printLines: ["Purveyors of fine goods · Est. 2001", "Across from the castle, Lumbridge"],
-    garments: [hoodie("lumbridge-general-store", colours.black), tee("lumbridge-general-store", colours.black)],
+    garments: [hoodie("lumbridge-general-store", colours.black), tee("lumbridge-general-store", colours.fadedBlack)],
   },
   {
     slug: "blue-moon-inn",
@@ -128,7 +132,7 @@ export const products: Product[] = [
     story:
       "The inn on the south side of Varrock where nobody asked why you were carrying a full inventory of cabbages. Lantern light in the windows, the city wall behind, a crescent moon on the sign. Washed charcoal fleece, bone ink.",
     printLines: ["Ales · Beds · Poor company", "South Varrock · Open late"],
-    garments: [hoodie("blue-moon-inn", colours.charcoal), tee("blue-moon-inn", colours.black)],
+    garments: [hoodie("blue-moon-inn", colours.charcoal), tee("blue-moon-inn", colours.fadedBlack)],
   },
   {
     slug: "karamja-fishing-co",
@@ -150,7 +154,7 @@ export const products: Product[] = [
     story:
       "Dead trees, a wrought-iron gate, crows on the roofline and a full moon behind cloud. The gothic one in the range, for the people who didn't run when the door shut behind them. Black hoodie, bone ink.",
     printLines: ["Guided tours · Guests rarely leave", "Draynor Village · Since 2001"],
-    garments: [hoodie("draynor-manor", colours.black), tee("draynor-manor", colours.black)],
+    garments: [hoodie("draynor-manor", colours.black), tee("draynor-manor", colours.fadedBlack)],
   },
   {
     slug: "al-kharid-scimitar-works",
@@ -161,7 +165,7 @@ export const products: Product[] = [
     story:
       "Ten gold at the gate, then a sandstone forge with the scimitars hanging on the wall and palm trees outside. The tee in the range you can wear to work. Black, bone ink, forge glow picked out in the line work.",
     printLines: ["Blades forged daily", "East of the toll gate · Al Kharid"],
-    garments: [tee("al-kharid-scimitar-works", colours.black), hoodie("al-kharid-scimitar-works", colours.black)],
+    garments: [tee("al-kharid-scimitar-works", colours.fadedBlack), hoodie("al-kharid-scimitar-works", colours.black)],
   },
   {
     slug: "barbarian-village-fishing-and-firemaking",
@@ -172,7 +176,7 @@ export const products: Product[] = [
     story:
       "Fur-roofed huts by a fast river, a rod leaning on a rock, a fire burning down to willow ash, the mine entrance in the hill behind. The place you spent an entire weekend for two levels. Washed charcoal, bone ink.",
     printLines: ["Trout · Salmon · Willow logs", "On the River Lum · Est. 2001"],
-    garments: [hoodie("barbarian-village-fishing-and-firemaking", colours.charcoal), tee("barbarian-village-fishing-and-firemaking", colours.black)],
+    garments: [hoodie("barbarian-village-fishing-and-firemaking", colours.charcoal), tee("barbarian-village-fishing-and-firemaking", colours.fadedBlack)],
   },
 
   // ------------------------------------------------------------ Elder Scrolls
@@ -185,7 +189,7 @@ export const products: Product[] = [
     story:
       "Off the boat, into the fog: stilt houses, the lighthouse, giant mushrooms in the marsh and a clerk who wants to know your name and your sign. The first stop for everyone. Black hoodie, bone ink.",
     printLines: ["All new arrivals report here", "Bitter Coast · Est. 2002"],
-    garments: [hoodie("census-and-excise-office", colours.black), tee("census-and-excise-office", colours.black)],
+    garments: [hoodie("census-and-excise-office", colours.black), tee("census-and-excise-office", colours.fadedBlack)],
   },
   {
     slug: "south-wall-cornerclub",
@@ -196,7 +200,7 @@ export const products: Product[] = [
     story:
       "Rounded adobe houses on the Odai, stone footbridges, ash hills behind, and a corner tavern where certain arrangements were made. Washed charcoal fleece, bone ink, and a name that will only mean something to the right people.",
     printLines: ["Rooms · Sujamma · Discretion", "Labour Town, Balmora"],
-    garments: [hoodie("south-wall-cornerclub", colours.charcoal), tee("south-wall-cornerclub", colours.black)],
+    garments: [hoodie("south-wall-cornerclub", colours.charcoal), tee("south-wall-cornerclub", colours.fadedBlack)],
   },
   {
     slug: "vivec-canton-ferry",
@@ -207,7 +211,7 @@ export const products: Product[] = [
     story:
       "The cantons rising out of the lake, bridges between them, a single gondola in the foreground and the mountain behind. Ferry timetables not guaranteed. Black tee, bone ink.",
     printLines: ["Gondola service · All cantons", "Foreign Quarter dock · Since 2002"],
-    garments: [tee("vivec-canton-ferry", colours.black), hoodie("vivec-canton-ferry", colours.black)],
+    garments: [tee("vivec-canton-ferry", colours.fadedBlack), hoodie("vivec-canton-ferry", colours.black)],
   },
   {
     slug: "newlands-lodge",
@@ -218,7 +222,7 @@ export const products: Product[] = [
     story:
       "Willows trailing into the river, a stone bridge, steep timber roofs and mountains behind. The nicest town in the province and the nicest lodge in it. Washed charcoal, bone ink.",
     printLines: ["Fine rooms · River views", "Cheydinhal · Est. 2006"],
-    garments: [hoodie("newlands-lodge", colours.charcoal), tee("newlands-lodge", colours.black)],
+    garments: [hoodie("newlands-lodge", colours.charcoal), tee("newlands-lodge", colours.fadedBlack)],
   },
   {
     slug: "surilie-brothers-vineyard",
@@ -240,7 +244,7 @@ export const products: Product[] = [
     story:
       "Snow on the pines, smoke from the chimneys, a lantern-lit porch and the peaks behind under a night sky. The one to wear in July. Black hoodie, bone ink.",
     printLines: ["Hot meals · Warm beds · Mead", "Bruma, Jerall Mountains"],
-    garments: [hoodie("jerall-view-inn", colours.black), tee("jerall-view-inn", colours.black)],
+    garments: [hoodie("jerall-view-inn", colours.black), tee("jerall-view-inn", colours.fadedBlack)],
   },
 ];
 
