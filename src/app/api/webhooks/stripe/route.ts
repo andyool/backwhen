@@ -66,7 +66,9 @@ export async function POST(req: Request) {
   } catch (e) {
     console.error("[webhook] Printful error", e);
     // 500 => Stripe will retry with backoff, which is what we want for transient Printful failures.
-    return NextResponse.json({ error: "Printful order failed" }, { status: 500 });
+    // The message is shown in Stripe's webhook log, which is where the owner looks first.
+    const detail = e instanceof Error ? e.message : String(e);
+    return NextResponse.json({ error: "Printful order failed", detail }, { status: 500 });
   }
 }
 
