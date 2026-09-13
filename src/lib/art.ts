@@ -5,8 +5,12 @@ import path from "node:path";
 // Cached per process so catalogue pages don't hit the disk on every render.
 const cache = new Map<string, boolean>();
 
+// In development the owner drops files in while the server runs, so only
+// cache once built for production.
+const useCache = process.env.NODE_ENV === "production";
+
 function exists(publicPath: string): boolean {
-  const hit = cache.get(publicPath);
+  const hit = useCache ? cache.get(publicPath) : undefined;
   if (hit !== undefined) return hit;
   let ok = false;
   try {
