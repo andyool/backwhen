@@ -84,8 +84,106 @@ const TEE_SIZES = ["S", "M", "L", "XL", "2XL", "3XL"];
 const HOODIE_PRICE = 8900;
 const TEE_PRICE = 4900;
 
-function emptyIds(sizes: string[]): Record<string, number | null> {
-  return Object.fromEntries(sizes.map((s) => [s, null]));
+// @printful-variants-start
+// Written by `npm run printful:products` — don't edit by hand.
+// Key: <slug>__<garment>__<colour slug>; value: size -> Printful sync_variant_id.
+const PRINTFUL_VARIANTS: Record<string, Record<string, number>> = {
+  "lumbridge-general-store__hoodie__black": {
+    "S": 5497826523,
+    "M": 5497826524,
+    "L": 5497826525,
+    "XL": 5497826526,
+    "2XL": 5497826527
+  },
+  "lumbridge-general-store__tee__black": {
+    "S": 5497826528,
+    "M": 5497826529,
+    "L": 5497826530,
+    "XL": 5497826531,
+    "2XL": 5497826532,
+    "3XL": 5497826533
+  },
+  "blue-moon-inn__hoodie__charcoal": {
+    "S": 5497826540,
+    "M": 5497826541,
+    "L": 5497826542,
+    "XL": 5497826543,
+    "2XL": 5497826544
+  },
+  "blue-moon-inn__tee__black": {
+    "S": 5497826588,
+    "M": 5497826589,
+    "L": 5497826590,
+    "XL": 5497826591,
+    "2XL": 5497826592,
+    "3XL": 5497826593
+  },
+  "karamja-fishing-co__tee__cream": {
+    "S": 5497826594,
+    "M": 5497826595,
+    "L": 5497826596,
+    "XL": 5497826597,
+    "2XL": 5497826598,
+    "3XL": 5497826599
+  },
+  "karamja-fishing-co__hoodie__charcoal": {
+    "S": 5497826600,
+    "M": 5497826601,
+    "L": 5497826602,
+    "XL": 5497826603,
+    "2XL": 5497826604
+  },
+  "draynor-manor__hoodie__black": {
+    "S": 5497826606,
+    "M": 5497826607,
+    "L": 5497826608,
+    "XL": 5497826609,
+    "2XL": 5497826610
+  },
+  "draynor-manor__tee__black": {
+    "S": 5497826626,
+    "M": 5497826631,
+    "L": 5497826632,
+    "XL": 5497826633,
+    "2XL": 5497826634,
+    "3XL": 5497826635
+  },
+  "al-kharid-scimitar-works__tee__black": {
+    "S": 5497826765,
+    "M": 5497826766,
+    "L": 5497826767,
+    "XL": 5497826768,
+    "2XL": 5497826769,
+    "3XL": 5497826770
+  },
+  "al-kharid-scimitar-works__hoodie__black": {
+    "S": 5497826797,
+    "M": 5497826801,
+    "L": 5497826808,
+    "XL": 5497826809,
+    "2XL": 5497826811
+  },
+  "barbarian-village-fishing-and-firemaking__hoodie__charcoal": {
+    "S": 5497827141,
+    "M": 5497827142,
+    "L": 5497827143,
+    "XL": 5497827144,
+    "2XL": 5497827145
+  },
+  "barbarian-village-fishing-and-firemaking__tee__black": {
+    "S": 5497827146,
+    "M": 5497827147,
+    "L": 5497827148,
+    "XL": 5497827149,
+    "2XL": 5497827150,
+    "3XL": 5497827151
+  }
+};
+// @printful-variants-end
+
+function idsFor(slug: string, type: GarmentType, colourSlug: string, sizes: string[]): Record<string, number | null> {
+  const ids = PRINTFUL_VARIANTS[`${slug}__${type}__${colourSlug}`] ?? {};
+  return Object.fromEntries(sizes.map((s) => [s, ids[s] ?? null]));
 }
 
 function hoodie(slug: string, colour: Colour): Garment {
@@ -95,7 +193,7 @@ function hoodie(slug: string, colour: Colour): Garment {
     priceCents: HOODIE_PRICE,
     image: `/products/${slug}-hoodie-${colour.slug}.png`,
     sizes: HOODIE_SIZES,
-    variantIds: emptyIds(HOODIE_SIZES),
+    variantIds: idsFor(slug, "hoodie", colour.slug, HOODIE_SIZES),
   };
 }
 
@@ -106,7 +204,7 @@ function tee(slug: string, colour: Colour): Garment {
     priceCents: TEE_PRICE,
     image: `/products/${slug}-tee-${colour.slug}.png`,
     sizes: TEE_SIZES,
-    variantIds: emptyIds(TEE_SIZES),
+    variantIds: idsFor(slug, "tee", colour.slug, TEE_SIZES),
   };
 }
 

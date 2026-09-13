@@ -27,8 +27,9 @@ Owner: Andreas, a teacher in Western Australia running this alongside a full-tim
   Stripe retry could help.
 - Shipping: flat rates per zone in `src/lib/shipping.ts`; the shopper picks a country in the cart and
   Stripe's address form is locked to it.
-- Every purchasable size needs a Printful `sync_variant_id` in `variantIds`; `null` = "coming soon".
-  `npm run printful:variants` lists them.
+- Every purchasable size needs a Printful `sync_variant_id`; `null` = "coming soon". The ids live in the
+  generated `PRINTFUL_VARIANTS` block in `products.ts`, written by `npm run printful:products` (which
+  also creates the sync products in the store from the print files). Don't hand-edit that block.
 
 The decision to build custom rather than Shopify was made knowingly (owner dislikes platform fees).
 Do not suggest moving to Shopify. Do not add a database unless a feature genuinely can't work without one.
@@ -90,7 +91,9 @@ Do not suggest moving to Shopify. Do not add a database unless a feature genuine
   deployed (needs a public URL for `public/artwork/print/`). Six RuneScape designs landed 2026-09-13 in
   `public/artwork/`; the Elder Scrolls six are still to come. Image tiers: Printful mockup → composited
   print file (`GarmentMock`) → generated `SignArt`.
-- Fill `variantIds` from `npm run printful:variants` once Printful products exist. Tee colour "black" is
+- 12 RuneScape sync products exist in store "backwhen" (18747782) since 2026-09-13, created from
+  ~1000px print files — replace with 3000px+ artwork before real orders (re-upload via Printful
+  dashboard or delete + re-run `printful:products`). Tee colour "black" is
   AS Colour "Faded black" (slug unchanged); hoodie sizes stop at 2XL. Printful account has
   stores 9110344 ("Personal orders", native — used for mockups) and 9112209 (Etsy); make a proper API
   store for Backwhen orders. Mockup garments: AS Colour 5101 hoodie (#484), AS Colour 5082 oversized

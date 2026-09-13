@@ -60,10 +60,11 @@ GST is treated as included in the price (`tax_behavior: inclusive`).
 
 1. Create a Printful store (choose "API" as the platform) and an API token with `orders` and `sync_products`
    scopes → `PRINTFUL_API_KEY`.
-2. In Printful, add each design as a product with the artwork placed on the garment. One Printful product
-   per design+garment+colour (e.g. "Lumbridge General Store — hoodie — black").
-3. Run `npm run printful:variants` and paste each size's `sync_variant_id` into `variantIds` in
-   `src/lib/products.ts`. Anything left as `null` shows as "coming soon" and can't be bought.
+2. Create a store in Printful (Manual order / API platform) and note its id (`GET /stores`).
+3. Run `npm run printful:products` (needs `PRINTFUL_STORE_ID`, `ARTWORK_BASE_URL`, `SITE_BASE_URL`). It
+   creates one sync product per design × garment × colour with the print file placed, and writes the
+   `sync_variant_id`s into the generated block in `src/lib/products.ts`. Re-running is safe: existing
+   products are read, not duplicated. Designs without a print file stay "coming soon".
 4. Leave `PRINTFUL_AUTO_CONFIRM=false` at first: orders arrive in Printful as **drafts** you confirm by hand
    after checking them. Flip it to `true` once you trust the pipeline.
 
