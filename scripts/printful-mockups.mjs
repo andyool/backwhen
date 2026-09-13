@@ -208,13 +208,17 @@ for (const product of wanted) {
     }
     if (!result || result.status !== "completed") throw new Error("Timed out waiting for mockup");
 
+    // One task with both placements returns the same main image (the back)
+    // on every entry, with the other angles under `extra` — so pick by the
+    // view name in the file name rather than by entry.
+    const views = result.mockups.flatMap((m) => [{ title: m.placement, url: m.mockup_url }, ...(m.extra ?? []).map((e) => ({ title: e.title, url: e.url }))]);
     for (const placement of missing) {
-      const mock = result.mockups.find((m) => m.placement === placement);
-      if (!mock) {
-        console.log(`  no ${placement} mockup came back (${result.mockups.map((m) => m.placement).join(", ")})`);
+      const view = views.find((v) => new RegExp(`-${placement}-[0-9a-f]+\\.png$`, "i").test(v.url)) ?? views.find((v) => v.title.toLowerCase() === placement);
+      if (!view) {
+        console.log(`  no ${placement} view came back (${views.map((v) => v.title).join(", ")})`);
         continue;
       }
-      const res = await fetch(mock.mockup_url);
+      const res = await fetch(view.url);
       await fs.writeFile(dests[placement], Buffer.from(await res.arrayBuffer()));
       console.log(`  saved ${path.relative(process.cwd(), dests[placement])}`);
     }
