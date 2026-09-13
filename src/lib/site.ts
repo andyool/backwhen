@@ -9,6 +9,9 @@ export const site = {
   email: "hello@backwhen.com",
   instagram: "https://instagram.com/backwhen",
   currency: "AUD",
+  // Where "Missing a place?" requests are POSTed as JSON (e.g. a Formspree form URL).
+  // Empty = fall back to a prefilled email.
+  requestEndpoint: process.env.NEXT_PUBLIC_REQUEST_ENDPOINT ?? "",
   // Shown in the footer. Fill in once registered.
   abn: "",
 };

@@ -28,6 +28,8 @@ jobs:
         env:
           NEXT_PUBLIC_BASE_PATH: /backwhen
           NEXT_PUBLIC_SITE_URL: https://andyool.github.io/backwhen
+          # Repository variable (Settings → Secrets and variables → Actions → Variables)
+          NEXT_PUBLIC_REQUEST_ENDPOINT: ${{ vars.REQUEST_ENDPOINT }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out

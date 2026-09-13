@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductGrid from "@/components/ProductGrid";
 import SplitText from "@/components/fx/SplitText";
+import PlaceRequest from "@/components/PlaceRequest";
 import { collections, getCollection, productsIn } from "@/lib/products";
 
 type Params = Promise<{ slug: string }>;
@@ -35,9 +36,12 @@ export default async function CollectionPage({ params }: { params: Params }) {
           </p>
           <SplitText as="h1" text={collection.name} className="display mt-1 block text-[52px] sm:text-[72px]" delay={100} />
         </div>
-        <p className="max-w-[52ch] text-[18px] text-faded md:justify-self-end md:text-[20px]" data-reveal style={{ ["--d" as string]: "300ms" }}>
-          {collection.blurb}
-        </p>
+        <div className="md:justify-self-end" data-reveal style={{ ["--d" as string]: "300ms" }}>
+          <p className="max-w-[52ch] text-[18px] text-faded md:text-[20px]">{collection.blurb}</p>
+          <div className="mt-8">
+            <PlaceRequest collection={collection.name} />
+          </div>
+        </div>
       </header>
       <ProductGrid products={items} priorityCount={3} />
     </div>

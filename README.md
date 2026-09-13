@@ -70,6 +70,13 @@ GST is treated as included in the price (`tax_behavior: inclusive`).
 
 Printful charges your card on file when an order is confirmed; you've already been paid by Stripe by then.
 
+## Place requests
+
+Each collection page has a "Missing a place?" field (150 characters, one click). It POSTs JSON to
+`NEXT_PUBLIC_REQUEST_ENDPOINT` — create a free form at https://formspree.io, paste its URL as the
+`REQUEST_ENDPOINT` repository variable on GitHub (and in `.env.local` for local dev). Until that is set,
+the button opens a prefilled email to `site.email` instead.
+
 ## Shipping
 
 Flat rates per zone in `src/lib/shipping.ts`. The shopper picks their country in the cart, the rate is
