@@ -7,6 +7,7 @@ import ProductImage from "./ProductImage";
 import SignArt from "./SignArt";
 import GarmentMock from "./GarmentMock";
 import BuyPanel from "./BuyPanel";
+import Dialogue from "./Dialogue";
 import Parallax from "./fx/Parallax";
 import Tilt from "./fx/Tilt";
 import SplitText from "./fx/SplitText";
@@ -36,7 +37,7 @@ export default function ProductView({
 
   return (
     <article className="mx-auto grid w-full max-w-page gap-10 px-5 pt-4 sm:px-8 lg:grid-cols-[3fr_2fr] lg:gap-16">
-      <div data-reveal="curtain">
+      <div data-reveal="curtain" data-examine={product.examine} data-name={product.name} data-href={`/products/${product.slug}`}>
         <Parallax speed={0.08}>
           <Tilt max={4}>
             {view === "print" && artwork.raw ? (
@@ -104,7 +105,7 @@ export default function ProductView({
         <div className="mt-12 flex flex-col gap-8 text-[16px]">
           <section data-reveal>
             <h2 className="mb-2 text-[20px]">The place</h2>
-            <p className="text-faded">{product.story}</p>
+            <Dialogue text={product.story} topics={product.topics} className="text-faded" />
           </section>
           <section data-reveal>
             <h2 className="mb-2 text-[20px]">On the print</h2>

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from "react";
 import { resolveSku, type ResolvedSku } from "./products";
 
 export type CartItem = { sku: string; qty: number };
@@ -16,6 +16,8 @@ type Action =
 
 const STORAGE_KEY = "backwhen-cart-v1";
 const MAX_QTY = 10;
+/** Total items the cart holds. Twenty-eight slots, for the usual reason. */
+export const MAX_ITEMS = 28;
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -52,7 +54,8 @@ type CartContextValue = {
   count: number;
   subtotalCents: number;
   hydrated: boolean;
-  add: (sku: string, qty?: number) => void;
+  /** Returns false when there is not enough inventory space. */
+  add: (sku: string, qty?: number) => boolean;
   setQty: (sku: string, qty: number) => void;
   remove: (sku: string) => void;
   clear: () => void;
@@ -92,7 +95,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     [state.items],
   );
 
-  const add = useCallback((sku: string, qty = 1) => dispatch({ type: "add", sku, qty }), []);
+  const itemsRef = useRef(state.items);
+  itemsRef.current = state.items;
+  const add = useCallback((sku: string, qty = 1) => {
+    const items = itemsRef.current;
+    const total = items.reduce((n, i) => n + i.qty, 0);
+    const already = items.find((i) => i.sku === sku)?.qty ?? 0;
+    if (total + qty > MAX_ITEMS || already + qty > MAX_QTY) return false;
+    dispatch({ type: "add", sku, qty });
+    return true;
+  }, []);
   const setQty = useCallback((sku: string, qty: number) => dispatch({ type: "set", sku, qty }), []);
   const remove = useCallback((sku: string) => dispatch({ type: "remove", sku }), []);
   const clear = useCallback(() => dispatch({ type: "clear" }), []);

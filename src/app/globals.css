@@ -542,3 +542,254 @@ body::after {
   margin-top: calc(var(--header-h, 74px) * -1);
   padding-top: var(--header-h, 74px);
 }
+
+/* ------------------------------------------------------------------ nods */
+
+/* chat box, bottom-left */
+.chatbox {
+  position: fixed;
+  left: 1rem;
+  bottom: 2.2rem;
+  z-index: 9600;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  pointer-events: none;
+  max-width: min(60ch, calc(100vw - 2rem));
+}
+.chatbox-line {
+  font-variation-settings: "opsz" 12;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #e8dfc8;
+  background: rgba(28, 26, 23, 0.92);
+  box-shadow: inset 0 0 0 1px #3a362f;
+  padding: 6px 10px;
+  animation: chatIn 0.25s var(--ease-out) both, chatOut 0.4s ease 4.8s both;
+}
+@keyframes chatIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes chatOut {
+  to {
+    opacity: 0;
+  }
+}
+
+/* right-click menu */
+.choose-option {
+  position: fixed;
+  z-index: 9700;
+  min-width: 220px;
+  background: #1c1a17;
+  box-shadow: inset 0 0 0 1px #3a362f, 0 0 0 1px rgba(0, 0, 0, 0.6);
+  padding: 2px;
+  animation: chatIn 0.12s var(--ease-out) both;
+}
+.choose-option-title {
+  font-variation-settings: "opsz" 12;
+  font-size: 13px;
+  color: #a69e8a;
+  padding: 6px 10px 4px;
+  border-bottom: 1px solid #3a362f;
+}
+.choose-option-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-size: 15px;
+  padding: 6px 10px;
+  color: #a69e8a;
+}
+.choose-option-item:hover,
+.choose-option-item:focus-visible {
+  background: #2a2723;
+  color: #e8dfc8;
+}
+.opt-verb {
+  color: #e8dfc8;
+}
+.choose-option-item:hover .opt-verb {
+  color: #efe7d3;
+}
+
+/* hover label in the card corner: verb, then target */
+.hover-label {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  z-index: 4;
+  pointer-events: none;
+  font-variation-settings: "opsz" 12;
+  font-size: 13px;
+  color: #a69e8a;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.3s, transform 0.4s var(--ease-out);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+.hover-verb {
+  color: #e8dfc8;
+}
+@media (hover: hover) {
+  .group:hover .hover-label {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* click marker */
+.click-x {
+  position: fixed;
+  z-index: 9650;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  pointer-events: none;
+  background:
+    linear-gradient(45deg, transparent 44%, #f5e94a 44%, #f5e94a 56%, transparent 56%),
+    linear-gradient(-45deg, transparent 44%, #f5e94a 44%, #f5e94a 56%, transparent 56%);
+  animation: clickX 0.45s steps(4) forwards;
+}
+.click-x.is-hot {
+  background:
+    linear-gradient(45deg, transparent 44%, #e0473a 44%, #e0473a 56%, transparent 56%),
+    linear-gradient(-45deg, transparent 44%, #e0473a 44%, #e0473a 56%, transparent 56%);
+}
+@keyframes clickX {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+/* dialogue topics */
+.topic {
+  color: #b7c4cf;
+  text-decoration: underline;
+  text-decoration-color: rgba(183, 196, 207, 0.4);
+  text-underline-offset: 3px;
+  transition: color 0.3s, text-decoration-color 0.3s;
+}
+.topic:hover,
+.topic.is-open {
+  color: #d5dee6;
+  text-decoration-color: #d5dee6;
+}
+.topic-reply {
+  margin-top: 0.6rem;
+  padding-left: 0.9rem;
+  border-left: 1px solid #3a362f;
+  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-style: italic;
+  font-weight: 300;
+  color: #e8dfc8;
+  animation: chatIn 0.35s var(--ease-out) both;
+}
+
+/* compass strip */
+.compass {
+  display: none;
+}
+@media (min-width: 900px) and (pointer: fine) {
+  .compass {
+    display: block;
+    position: fixed;
+    left: 50%;
+    bottom: 10px;
+    transform: translateX(-50%);
+    width: 360px;
+    height: 22px;
+    z-index: 9500;
+    pointer-events: none;
+    opacity: 0.55;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent);
+    overflow: hidden;
+  }
+}
+.compass-track {
+  position: absolute;
+  inset: 0;
+  transform: translateX(calc(var(--turn, 0px) - 180px));
+  will-change: transform;
+}
+.compass-letter {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-variation-settings: "opsz" 12;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: #e8dfc8;
+}
+.compass-tick {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 4px;
+  background: #a69e8a;
+}
+.compass-tick.is-major {
+  height: 7px;
+  background: #e8dfc8;
+}
+.compass-markers {
+  position: absolute;
+  inset: 0;
+}
+.compass-marker {
+  position: absolute;
+  bottom: 3px;
+  left: calc(180px + (var(--top) - var(--scroll, 0) - 400) * 0.5px);
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  background: #7a7f4e;
+  transform: rotate(45deg);
+}
+.compass-centre {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 1px;
+  height: 100%;
+  background: rgba(232, 223, 200, 0.35);
+}
+
+/* preloader loading bar */
+.preloader-bar {
+  width: 180px;
+  height: 3px;
+  background: #2a2723;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeUp 0.4s ease 0.5s forwards;
+}
+.preloader-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #e8dfc8;
+  animation: load 0.9s var(--ease-in-out) 0.55s forwards;
+}
+@keyframes load {
+  to {
+    width: 100%;
+  }
+}
+.preloader-wait {
+  font-variation-settings: "opsz" 12;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #a69e8a;
+  opacity: 0;
+  animation: fadeUp 0.4s ease 0.6s forwards;
+}

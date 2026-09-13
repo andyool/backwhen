@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCart } from "@/lib/cart";
 import { garmentAvailable, garmentLabel, makeSku, type Product } from "@/lib/products";
 import { money } from "@/lib/format";
+import { say } from "@/lib/say";
 
 export default function BuyPanel({ product, onGarmentChange }: { product: Product; onGarmentChange?: (index: number) => void }) {
   const { add } = useCart();
@@ -26,7 +27,10 @@ export default function BuyPanel({ product, onGarmentChange }: { product: Produc
 
   function addToCart() {
     if (!size) return;
-    add(makeSku(product.slug, garment, size));
+    if (!add(makeSku(product.slug, garment, size))) {
+      say("Not enough inventory space.");
+      return;
+    }
     setAdded(true);
   }
 
@@ -115,7 +119,7 @@ export default function BuyPanel({ product, onGarmentChange }: { product: Produc
           </button>
           {added && (
             <Link href="/cart" className="link self-start text-[15px]">
-              Go to cart
+              Click here to continue.
             </Link>
           )}
         </div>

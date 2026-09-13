@@ -9,6 +9,10 @@ import Preloader from "@/components/fx/Preloader";
 import SmoothScroll from "@/components/fx/SmoothScroll";
 import RevealObserver from "@/components/fx/RevealObserver";
 import ScrollProgress from "@/components/fx/ScrollProgress";
+import Chatbox from "@/components/fx/Chatbox";
+import ChooseOption from "@/components/fx/ChooseOption";
+import ClickMarker from "@/components/fx/ClickMarker";
+import Compass from "@/components/fx/Compass";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -37,6 +41,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
           <RevealObserver />
           <SmoothScroll />
+          <Compass />
+          <ChooseOption />
+          <ClickMarker />
+          <Chatbox />
         </CartProvider>
       </body>
     </html>

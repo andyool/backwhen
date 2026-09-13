@@ -12,7 +12,7 @@ export default function NotFound() {
       <div className="mx-auto w-full max-w-page px-5 sm:px-8">
         <SplitText as="h1" text="This place doesn’t exist." className="display block text-[44px] sm:text-[72px]" />
         <p className="mt-6 max-w-[46ch] text-[18px] text-faded" data-reveal style={{ ["--d" as string]: "300ms" }}>
-          Which is on brand, but not helpful. The page you were after has moved or never was.
+          You can&rsquo;t reach that. The page you were after has moved or never was.
         </p>
         <div className="mt-10" data-reveal style={{ ["--d" as string]: "450ms" }}>
           <Magnetic>

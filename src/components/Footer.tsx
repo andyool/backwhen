@@ -2,6 +2,7 @@ import Link from "next/link";
 import { site } from "@/lib/site";
 import { collections } from "@/lib/products";
 import BackToTop from "./BackToTop";
+import NothingInteresting from "./NothingInteresting";
 
 export default function Footer() {
   return (
@@ -46,9 +47,9 @@ export default function Footer() {
       </div>
 
       <div className="mx-auto w-full max-w-page overflow-hidden px-5 sm:px-8" aria-hidden>
-        <p className="giant -mb-[0.12em] mt-6 whitespace-nowrap text-bone/90" data-reveal="fade">
+        <NothingInteresting className="giant -mb-[0.12em] mt-6 block w-full whitespace-nowrap text-left text-bone/90" data-reveal="fade">
           {site.wordmark}
-        </p>
+        </NothingInteresting>
       </div>
     </footer>
   );

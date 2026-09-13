@@ -43,7 +43,9 @@ export default async function CollectionPage({ params }: { params: Params }) {
           </div>
         </div>
       </header>
-      <ProductGrid products={items} priorityCount={3} />
+      <div data-compass={slug}>
+        <ProductGrid products={items} priorityCount={3} />
+      </div>
     </div>
   );
 }

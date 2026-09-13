@@ -78,7 +78,7 @@ export default function HomePage() {
 
       {/* ------------------------------------------------------------ collections */}
       {collections.map((c, i) => (
-        <section key={c.slug} className="mx-auto w-full max-w-page px-5 pt-24 sm:px-8 sm:pt-32">
+        <section key={c.slug} className="mx-auto w-full max-w-page px-5 pt-24 sm:px-8 sm:pt-32" data-compass={c.slug}>
           <div className="mb-10 grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-end md:gap-10">
             <p className="display-soft text-[64px] leading-none text-faded/40 sm:text-[96px]" data-reveal="fade">
               {String(i + 1).padStart(2, "0")}
@@ -98,7 +98,7 @@ export default function HomePage() {
       ))}
 
       {/* ------------------------------------------------------------ how it's made */}
-      <section className="mx-auto mt-32 grid w-full max-w-page gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-20">
+      <section className="mx-auto mt-32 grid w-full max-w-page gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-20" data-compass="made">
         <div className="lg:sticky lg:top-32 lg:self-start">
           <DrawSign className="w-full max-w-[560px] text-bone/80" />
         </div>
@@ -156,7 +156,7 @@ export default function HomePage() {
       </section>
 
       {/* ------------------------------------------------------------ closing */}
-      <section className="mx-auto mt-36 w-full max-w-page px-5 sm:px-8">
+      <section className="mx-auto mt-36 w-full max-w-page px-5 sm:px-8" data-compass="end">
         <SplitText as="p" text="If you know, you know." className="display-soft block text-[13vw] text-bone sm:text-[96px] lg:text-[140px]" stagger={90} />
         <div className="mt-8 flex flex-wrap items-center gap-6" data-reveal style={{ ["--d" as string]: "400ms" }}>
           <Magnetic>

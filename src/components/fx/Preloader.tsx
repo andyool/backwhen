@@ -47,6 +47,12 @@ export default function Preloader() {
         ))}
       </div>
       <p className="preloader-line">{site.tagline}</p>
+      <div className="preloader-bar" aria-hidden>
+        <span />
+      </div>
+      <p className="preloader-wait" aria-hidden>
+        Loading — please wait.
+      </p>
     </div>
   );
 }

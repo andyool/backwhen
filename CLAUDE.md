@@ -55,6 +55,17 @@ Do not suggest moving to Shopify. Do not add a database unless a feature genuine
   large layers (no skew-with-velocity, no animated or blended full-page grain, no live SVG `feTurbulence`
   filters on cards — cloth texture is a tiled data-URI image via `.cloth`). `SignArt` renders a generated engraved-sign mock-up on the garment colour
   whenever the artwork PNG is missing (`src/lib/art.ts` checks the disk server-side).
+- Nods (added 2026-09-13 at the owner's request: "if you know, you know", through design and function, never
+  franchise words). Keep them, add more in the same spirit, never name a game. Right-click on anything
+  with `data-examine` opens a "Choose option" menu (Wear / Examine / Walk here / Cancel, `ChooseOption`);
+  Examine and other one-liners print in the bottom-left `Chatbox` via `say()`. Product cards show a
+  "Wear <name>" hover label (verb then target). Clicks flash a small X (`ClickMarker`: yellow on ground,
+  red on something usable). The cart holds 28 items (`MAX_ITEMS`), overflow says "Not enough inventory
+  space." Product stories are `Dialogue`: phrases in `topics` open a reply beneath. A faint `Compass`
+  strip along the bottom (desktop) turns with scroll, markers from `data-compass`. Preloader shows a bar
+  and "Loading — please wait." The giant footer wordmark says "Nothing interesting happens." on click.
+  404 says "You can't reach that." After adding to cart the link reads "Click here to continue."
+  `examine` and `topics` live per product in `products.ts`; write new ones in the same dry voice.
 - Copy voice: dry outfitter's catalogue. "Ales, beds, poor company." Errors explain and direct, never
   apologise. Buttons say what happens ("Pay with card", "Add to cart").
 - Mobile first: most traffic will come from Instagram ads on phones.

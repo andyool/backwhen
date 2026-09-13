@@ -21,7 +21,13 @@ export default function ProductCard({ product, priority, index = 0 }: { product:
       <SignArt name={product.name} place={product.place} printLines={product.printLines} colour={hero.colour} type={hero.type} variant={variant} />
     );
   return (
-    <Link href={`/products/${product.slug}`} className="group block">
+    <Link
+      href={`/products/${product.slug}`}
+      className="group block"
+      data-examine={product.examine}
+      data-name={product.name}
+      data-href={`/products/${product.slug}`}
+    >
       <Tilt>
         <ProductImage
           src={hero.image}
@@ -31,6 +37,9 @@ export default function ProductCard({ product, priority, index = 0 }: { product:
           className="curtain"
           fallback={fallback}
         />
+        <span className="hover-label" aria-hidden>
+          <span className="hover-verb">Wear</span> {product.name}
+        </span>
       </Tilt>
       <div className="mt-4 flex items-baseline justify-between gap-4" data-reveal style={{ ["--d" as string]: delay }}>
         <h3 className="text-[19px] leading-tight">
