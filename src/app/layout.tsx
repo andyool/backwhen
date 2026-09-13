@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/lib/cart";
-import { site, siteUrl } from "@/lib/site";
+import { site, siteUrl, siteOrigin } from "@/lib/site";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Preloader from "@/components/fx/Preloader";
@@ -23,7 +23,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl()),
+  metadataBase: siteOrigin(),
   title: { default: `${site.name} — ${site.tagline}`, template: `%s — ${site.name}` },
   description: site.description,
   openGraph: { siteName: site.name, type: "website" },
