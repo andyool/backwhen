@@ -30,7 +30,7 @@ Owner: Andreas, a teacher in Western Australia running this alongside a full-tim
 - Payment: Stripe Checkout (hosted page). `src/app/api/checkout/route.ts` rebuilds every price from the
   catalogue server-side — never trust prices from the browser. GST is inclusive.
 - Fulfilment: Printful print-on-demand. `src/app/api/webhooks/stripe/route.ts` receives
-  `checkout.session.completed`, checks Printful for a duplicate (`external_id` = Stripe session id),
+  `checkout.session.completed`, checks Printful for a duplicate (`external_id` = Stripe payment intent id; Printful caps it at 32 chars),
   then creates the Printful order. Draft unless `PRINTFUL_AUTO_CONFIRM=true`. Return 500 only when a
   Stripe retry could help.
 - Shipping: flat rates per zone in `src/lib/shipping.ts`; the shopper picks a country in the cart and

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
@@ -37,7 +38,8 @@ export async function POST(req: Request) {
 
   try {
     // Idempotency: Stripe may deliver the same event more than once.
-    const existing = await getOrderByExternalId(session.id);
+    const externalId = externalIdFor(session);
+    const existing = await getOrderByExternalId(externalId);
     if (existing) return NextResponse.json({ received: true, printful_order: existing.id, duplicate: true });
 
     const recipient = recipientFrom(session);
@@ -54,7 +56,7 @@ export async function POST(req: Request) {
     }
 
     const order = await createOrder({
-      externalId: session.id,
+      externalId,
       recipient,
       items,
       confirm: process.env.PRINTFUL_AUTO_CONFIRM === "true",
@@ -70,6 +72,14 @@ export async function POST(req: Request) {
     const detail = e instanceof Error ? e.message : String(e);
     return NextResponse.json({ error: "Printful order failed", detail }, { status: 500 });
   }
+}
+
+// Printful caps external_id at 32 characters; a Checkout session id is 66.
+// The payment intent id is short, unique per payment and searchable in Stripe.
+function externalIdFor(session: Stripe.Checkout.Session): string {
+  const pi = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id;
+  if (pi && pi.length <= 32) return pi;
+  return `cs_${createHash("sha256").update(session.id).digest("hex").slice(0, 29)}`;
 }
 
 function recipientFrom(session: Stripe.Checkout.Session): PrintfulRecipient | null {
