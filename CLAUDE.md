@@ -88,10 +88,10 @@ Do not suggest moving to Shopify. Do not add a database unless a feature genuine
 ## Backlog (only when asked)
 
 - Generate Printful mockups into `public/products/` with `npm run printful:mockups` once the site is
-  deployed (needs a public URL for `public/artwork/print/`). Six RuneScape designs landed 2026-09-13 in
-  `public/artwork/`; the Elder Scrolls six are still to come. Image tiers: Printful mockup → composited
+  deployed (needs a public URL for `public/artwork/print/`). All twelve designs landed 2026-09-13 in
+  `public/artwork/` with Printful mockups in `public/products/`. Image tiers: Printful mockup → composited
   print file (`GarmentMock`) → generated `SignArt`.
-- 12 RuneScape sync products exist in store "backwhen" (18747782) since 2026-09-13, created from
+- All 24 sync products (12 designs × hoodie/tee) exist in store "backwhen" (18747782) since 2026-09-13, created from
   ~1000px print files — replace with 3000px+ artwork before real orders (re-upload via Printful
   dashboard or delete + re-run `printful:products`). Tee colour "black" is
   AS Colour "Faded black" (slug unchanged); hoodie sizes stop at 2XL. Printful account has
