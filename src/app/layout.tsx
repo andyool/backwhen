@@ -1,0 +1,36 @@
+import type { Metadata } from "next";
+import { Fraunces } from "next/font/google";
+import "./globals.css";
+import { CartProvider } from "@/lib/cart";
+import { site, siteUrl } from "@/lib/site";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  axes: ["opsz", "SOFT"],
+  style: ["normal", "italic"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
+  title: { default: `${site.name} — ${site.tagline}`, template: `%s — ${site.name}` },
+  description: site.description,
+  openGraph: { siteName: site.name, type: "website" },
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en-AU" className={fraunces.variable}>
+      <body className="min-h-screen flex flex-col">
+        <CartProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </CartProvider>
+      </body>
+    </html>
+  );
+}

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+  <rect width="800" height="1000" fill="#2A2723"/>
+  <rect x="60" y="60" width="680" height="880" fill="none" stroke="#E8DFC8" stroke-opacity="0.25" stroke-width="2"/>
+  <rect x="76" y="76" width="648" height="848" fill="none" stroke="#E8DFC8" stroke-opacity="0.12" stroke-width="1"/>
+  <g fill="none" stroke="#E8DFC8" stroke-opacity="0.35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M160 640 L400 420 L640 640 Z"/>
+    <path d="M230 640 L230 560 L330 560 L330 640"/>
+    <path d="M470 640 L470 540 L570 540 L570 640"/>
+    <path d="M120 700 Q400 660 680 700"/>
+    <path d="M140 740 Q400 700 660 740"/>
+  </g>
+  <text x="400" y="820" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#A69E8A">Artwork not uploaded yet</text>
+  <text x="400" y="852" text-anchor="middle" font-family="Georgia, serif" font-size="16" fill="#A69E8A" opacity="0.7">Add the PNG to /public/products</text>
+</svg>
