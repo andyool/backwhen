@@ -72,6 +72,8 @@ export async function createOrder(input: {
   items: PrintfulOrderItem[];
   confirm: boolean;
   packingSlipMessage?: string;
+  /** What the customer paid for shipping, as a decimal string, for the packing slip */
+  retailShipping?: string;
 }): Promise<PrintfulOrder> {
   const params = new URLSearchParams({ confirm: String(input.confirm) });
   return call<PrintfulOrder>(`/orders?${params}`, {
@@ -81,6 +83,7 @@ export async function createOrder(input: {
       recipient: input.recipient,
       items: input.items,
       packing_slip: input.packingSlipMessage ? { message: input.packingSlipMessage } : undefined,
+      retail_costs: input.retailShipping ? { shipping: input.retailShipping } : undefined,
     }),
   });
 }

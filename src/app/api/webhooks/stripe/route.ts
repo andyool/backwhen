@@ -61,6 +61,7 @@ export async function POST(req: Request) {
       items,
       confirm: process.env.PRINTFUL_AUTO_CONFIRM === "true",
       packingSlipMessage: `Thanks for your order from ${site.name}.`,
+      retailShipping: ((session.shipping_cost?.amount_total ?? 0) / 100).toFixed(2),
     });
 
     console.log(`[webhook] Printful order ${order.id} (${order.status}) for session ${session.id}`);
