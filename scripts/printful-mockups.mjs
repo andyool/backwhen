@@ -13,7 +13,7 @@
 // rate-limited to roughly two per minute; 12 garments takes ~6 minutes.
 //
 // Env overrides (defaults are AS Colour, which Printful fulfils from Australia):
-//   PRINTFUL_HOODIE_PRODUCT="AS Colour 5101"  PRINTFUL_TEE_PRODUCT="AS Colour 5080"
+//   PRINTFUL_HOODIE_PRODUCT="AS Colour 5101"  PRINTFUL_TEE_PRODUCT="AS Colour 5082"
 //   Or give catalog ids directly: PRINTFUL_HOODIE_ID=123 PRINTFUL_TEE_ID=456
 
 import fs from "node:fs/promises";
@@ -64,14 +64,50 @@ const COLOUR_NAMES = {
   cream: ["bone", "ecru", "natural", "cream", "sand", "oatmeal"],
 };
 
+// "Faded Black" (AS Colour 5082) counts as black, "Grey Marle" stays distinct.
+const normaliseColour = (c) => (c ?? "").toLowerCase().replace(/^faded /, "").trim();
+
 function pickVariant(product, colourSlug) {
   const names = COLOUR_NAMES[colourSlug] ?? [colourSlug];
-  const variants = product.variants.filter((v) => names.some((n) => (v.color ?? "").toLowerCase() === n));
+  const variants = product.variants.filter((v) => names.includes(normaliseColour(v.color)));
   if (variants.length === 0) {
     const available = [...new Set(product.variants.map((v) => v.color))].join(", ");
     throw new Error(`${product.product.title}: no colour matching ${names.join("/")}. Available: ${available}`);
   }
   return variants.find((v) => /^(L|Large)$/i.test(v.size)) ?? variants[0];
+}
+
+// ---------------------------------------------------------------- placement
+
+function pngSize(buf) {
+  if (buf.readUInt32BE(0) !== 0x89504e47) throw new Error("not a PNG");
+  return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+}
+
+const printfileCache = new Map();
+async function printfileFor(productId, variantId) {
+  if (!printfileCache.has(productId)) printfileCache.set(productId, await api("GET", `/mockup-generator/printfiles/${productId}`));
+  const info = printfileCache.get(productId);
+  const vp = info.variant_printfiles.find((v) => v.variant_id === variantId);
+  const pfId = vp?.placements?.front ?? Object.values(vp?.placements ?? {})[0];
+  const pf = info.printfiles.find((f) => f.printfile_id === pfId);
+  if (!pf) throw new Error(`No front printfile for variant ${variantId}`);
+  return pf;
+}
+
+// Fit the design to a chest print: ~80% of the print width, a little below the top.
+function positionFor(pf, img) {
+  const scale = Math.min((pf.width * 0.8) / img.width, (pf.height * 0.9) / img.height);
+  const width = Math.round(img.width * scale);
+  const height = Math.round(img.height * scale);
+  return {
+    area_width: pf.width,
+    area_height: pf.height,
+    width,
+    height,
+    left: Math.round((pf.width - width) / 2),
+    top: Math.round(pf.height * 0.05),
+  };
 }
 
 // ---------------------------------------------------------------- main
@@ -117,7 +153,7 @@ const outDir = path.resolve("public/products");
 await fs.mkdir(outDir, { recursive: true });
 
 const hoodie = await findProduct("PRINTFUL_HOODIE_ID", "PRINTFUL_HOODIE_PRODUCT", "as colour 5101");
-const tee = await findProduct("PRINTFUL_TEE_ID", "PRINTFUL_TEE_PRODUCT", "as colour 5080");
+const tee = await findProduct("PRINTFUL_TEE_ID", "PRINTFUL_TEE_PRODUCT", "as colour 5082");
 console.log(`Hoodie: ${hoodie.product.title} (#${hoodie.product.id})`);
 console.log(`Tee:    ${tee.product.title} (#${tee.product.id})`);
 
@@ -130,6 +166,7 @@ for (const product of wanted) {
     continue;
   }
   const imageUrl = `${baseUrl}/${product.slug}.png`;
+  const img = pngSize(await fs.readFile(printFile));
 
   for (const g of product.garments) {
     const dest = path.join(outDir, `${product.slug}-${g.type}-${g.colour.slug}.png`);
@@ -143,10 +180,11 @@ for (const product of wanted) {
     const variant = pickVariant(catalog, g.colour.slug);
     console.log(`\n${product.name} — ${g.type}, ${g.colour.name} → variant ${variant.id} (${variant.color} / ${variant.size})`);
 
+    const pf = await printfileFor(catalog.product.id, variant.id);
     const task = await api("POST", `/mockup-generator/create-task/${catalog.product.id}`, {
       variant_ids: [variant.id],
       format: "png",
-      files: [{ placement: "front", image_url: imageUrl }],
+      files: [{ placement: "front", image_url: imageUrl, position: positionFor(pf, img) }],
     });
 
     let result;

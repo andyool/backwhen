@@ -3,8 +3,7 @@
 import { useEffect } from "react";
 
 // Inertial wheel scrolling on top of native scroll (sticky elements keep
-// working). Publishes scroll velocity as --vel on <html> so images can
-// lean with the scroll. Touch and reduced-motion stay native.
+// working). Touch and reduced-motion stay native.
 export default function SmoothScroll() {
   useEffect(() => {
     const root = document.documentElement;
@@ -15,7 +14,6 @@ export default function SmoothScroll() {
     let current = window.scrollY;
     let raf = 0;
     let animating = false;
-    let lastY = current;
 
     const max = () => root.scrollHeight - window.innerHeight;
 
@@ -27,11 +25,7 @@ export default function SmoothScroll() {
         animating = false;
       }
       window.scrollTo(0, current);
-      const vel = Math.max(-1, Math.min(1, (current - lastY) / 40));
-      lastY = current;
-      root.style.setProperty("--vel", vel.toFixed(3));
       if (animating) raf = requestAnimationFrame(loop);
-      else root.style.setProperty("--vel", "0");
     };
 
     const onWheel = (e: WheelEvent) => {
@@ -55,7 +49,6 @@ export default function SmoothScroll() {
       if (!animating) {
         current = window.scrollY;
         target = current;
-        lastY = current;
       }
     };
 
@@ -65,7 +58,6 @@ export default function SmoothScroll() {
       cancelAnimationFrame(raf);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("scroll", onScroll);
-      root.style.removeProperty("--vel");
     };
   }, []);
   return null;

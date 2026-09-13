@@ -50,7 +50,9 @@ Do not suggest moving to Shopify. Do not add a database unless a feature genuine
   (engraved inn drawn on scroll), `Counter`, `Parallax`, `SmoothScroll` (inertial wheel, native on
   touch), `Preloader` (once per
   session), `template.tsx` page wipe, film grain via `body::after`. All of it respects
-  `prefers-reduced-motion`. `SignArt` renders a generated engraved-sign mock-up on the garment colour
+  `prefers-reduced-motion`. Performance rule learned the hard way: nothing may change per scroll frame on
+  large layers (no skew-with-velocity, no animated or blended full-page grain, no live SVG `feTurbulence`
+  filters on cards — cloth texture is a tiled data-URI image via `.cloth`). `SignArt` renders a generated engraved-sign mock-up on the garment colour
   whenever the artwork PNG is missing (`src/lib/art.ts` checks the disk server-side).
 - Copy voice: dry outfitter's catalogue. "Ales, beds, poor company." Errors explain and direct, never
   apologise. Buttons say what happens ("Pay with card", "Add to cart").
@@ -88,7 +90,10 @@ Do not suggest moving to Shopify. Do not add a database unless a feature genuine
   deployed (needs a public URL for `public/artwork/print/`). Six RuneScape designs landed 2026-09-13 in
   `public/artwork/`; the Elder Scrolls six are still to come. Image tiers: Printful mockup → composited
   print file (`GarmentMock`) → generated `SignArt`.
-- Fill `variantIds` from `npm run printful:variants` once Printful products exist.
+- Fill `variantIds` from `npm run printful:variants` once Printful products exist. Printful account has
+  stores 9110344 ("Personal orders", native — used for mockups) and 9112209 (Etsy); make a proper API
+  store for Backwhen orders. Mockup garments: AS Colour 5101 hoodie (#484), AS Colour 5082 oversized
+  faded tee (#713); no 5080 heavy tee in Printful's catalogue.
 - Branded order/shipping emails (Resend) — Stripe's receipt and Printful's tracking email cover it for launch.
 - Size guide table on the product page (measurements from the Printful/AS Colour spec).
 - Plausible or Fathom analytics; Meta pixel for ads (owner's marketing runs on Instagram).

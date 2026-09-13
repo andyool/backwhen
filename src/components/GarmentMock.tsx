@@ -25,21 +25,12 @@ export default function GarmentMock({ artwork, colour, type, alt, priority, size
     <div className="absolute inset-0" style={{ background: colour.hex }}>
       <svg viewBox="0 0 800 1000" className="absolute inset-0 h-full w-full" aria-hidden preserveAspectRatio="none">
         <defs>
-          <filter id="gm-cloth" x="0" y="0" width="100%" height="100%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="n" />
-            <feColorMatrix in="n" type="saturate" values="0" result="g" />
-            <feComponentTransfer in="g" result="t">
-              <feFuncA type="table" tableValues="0 0.12" />
-            </feComponentTransfer>
-            <feBlend in="SourceGraphic" in2="t" mode="multiply" />
-          </filter>
           <radialGradient id="gm-light" cx="50%" cy="35%" r="70%">
             <stop offset="0%" stopColor="#ffffff" stopOpacity={colour.onDark ? 0.08 : 0.25} />
             <stop offset="100%" stopColor="#000000" stopOpacity={colour.onDark ? 0.35 : 0.08} />
           </radialGradient>
         </defs>
         <rect width="800" height="1000" fill="url(#gm-light)" />
-        <rect width="800" height="1000" fill={colour.hex} filter="url(#gm-cloth)" opacity="0.6" />
         <g fill="none" stroke={seam} strokeOpacity="0.08" strokeWidth="2">
           {type === "hoodie" ? (
             <>
@@ -55,6 +46,7 @@ export default function GarmentMock({ artwork, colour, type, alt, priority, size
           )}
         </g>
       </svg>
+      <div className="cloth absolute inset-0" aria-hidden />
       <div className="absolute left-[19%] top-[14%] w-[62%]">
         <Image
           src={asset(src)}
