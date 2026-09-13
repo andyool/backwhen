@@ -28,17 +28,28 @@ export function artExists(image: string): boolean {
 }
 
 export type Artwork = {
-  /** Transparent, print-ready file (from scripts/prepare-artwork.mjs) */
+  /** Transparent, print-ready back design (from scripts/prepare-artwork.mjs) */
   print: string | null;
-  /** The raw design as delivered, background baked in */
+  /** The raw back design as delivered, background baked in */
   raw: string | null;
+  /** Transparent, print-ready left-chest crest */
+  crest: string | null;
+  /** The raw crest as delivered, background baked in */
+  crestRaw: string | null;
 };
 
 /** The design files for a product, if the owner has dropped them in public/artwork. */
 export function artworkFor(slug: string): Artwork {
   const print = `/artwork/print/${slug}.png`;
   const raw = `/artwork/${slug}.png`;
-  return { print: exists(print) ? print : null, raw: exists(raw) ? raw : null };
+  const crest = `/artwork/print/crest/${slug}.png`;
+  const crestRaw = `/artwork/crest/${slug}.png`;
+  return {
+    print: exists(print) ? print : null,
+    raw: exists(raw) ? raw : null,
+    crest: exists(crest) ? crest : null,
+    crestRaw: exists(crestRaw) ? crestRaw : null,
+  };
 }
 
 export function artworkMap(slugs: string[]): Record<string, Artwork> {

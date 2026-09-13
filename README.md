@@ -25,13 +25,15 @@ The site runs without any keys — you just can't check out.
 
 Three tiers of product image, best available wins:
 
-1. `public/products/<slug>-<hoodie|tee>-<colour>.png` — a Printful photographic mockup.
+1. `public/products/<slug>-<hoodie|tee>-<colour>-back.png` (and `-front.png`) — Printful photographic mockups
+   of the big back print and the small left-chest crest.
 2. `public/artwork/print/<slug>.png` — the transparent print file, composited onto the garment colour
    by the site (`src/components/GarmentMock.tsx`).
 3. A generated engraved-sign placeholder (`src/components/SignArt.tsx`).
 
 ```bash
-# 1. drop raw designs in public/artwork/<slug>.png, then knock the backgrounds out
+# 1. drop raw designs in public/artwork/<slug>.png (back) and public/artwork/crest/<slug>.png (chest),
+#    then knock the backgrounds out
 npm run artwork:prepare
 
 # 2. once the print files are reachable on a public URL (deploy first), generate Printful mockups

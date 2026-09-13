@@ -1,18 +1,22 @@
 // Creates one Printful sync product per design × garment × colour in the
-// backwhen store, with the print file placed and one sync variant per size,
-// then writes the sync_variant ids into src/lib/products.ts so those sizes
-// become purchasable. Safe to re-run: existing products (matched by
-// external_id) are read, not recreated.
+// backwhen store — the big design on the back, the crest on the left chest,
+// one sync variant per size — then writes the sync_variant ids into
+// src/lib/products.ts so those sizes become purchasable. Safe to re-run:
+// existing products (matched by external_id) are read, not recreated.
 //
 //   PRINTFUL_API_KEY=... PRINTFUL_STORE_ID=... \
 //   ARTWORK_BASE_URL=https://andyool.github.io/backwhen/artwork/print \
 //   SITE_BASE_URL=https://andyool.github.io/backwhen \
-//     node scripts/printful-create-products.mjs [slug ...]
+//     node scripts/printful-create-products.mjs [--recreate] [--prune] [slug ...]
+//
+//   --recreate  delete and rebuild the matched products (after artwork or placement changes)
+//   --prune     delete store products whose garment/colour is no longer in the catalogue
 
 import fs from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { backPosition, crestPosition } from "./lib/placement.mjs";
 
 const key = process.env.PRINTFUL_API_KEY;
 const storeId = process.env.PRINTFUL_STORE_ID;
@@ -69,7 +73,21 @@ const normaliseSize = (s) => s.replace(/^(\d)XL$/, "$1XL").toUpperCase();
 
 async function catalogVariants(productId) {
   const r = await api("GET", `/products/${productId}`);
-  return { title: r.product.title, variants: r.variants };
+  const pf = await api("GET", `/mockup-generator/printfiles/${productId}`);
+  return { title: r.product.title, variants: r.variants, printfiles: pf };
+}
+
+// The print area for one placement of one catalogue variant.
+function printfileFor(catalog, variantId, placement) {
+  const vp = catalog.printfiles.variant_printfiles.find((v) => v.variant_id === variantId);
+  const pf = catalog.printfiles.printfiles.find((f) => f.printfile_id === vp?.placements?.[placement]);
+  if (!pf) throw new Error(`${catalog.title}: no ${placement} print area for variant ${variantId}`);
+  return pf;
+}
+
+function pngSize(buf) {
+  if (buf.readUInt32BE(0) !== 0x89504e47) throw new Error("not a PNG");
+  return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
 }
 
 function catalogVariantFor(catalog, colourSlug, size) {
@@ -82,7 +100,10 @@ function catalogVariantFor(catalog, colourSlug, size) {
 // ---------------------------------------------------------------- catalogue
 
 const { products, garmentLabel, makeSku } = await import(pathToFileURL(path.resolve("src/lib/products.ts")).href);
-const only = process.argv.slice(2);
+const args = process.argv.slice(2);
+const recreate = args.includes("--recreate");
+const prune = args.includes("--prune");
+const only = args.filter((a) => !a.startsWith("--"));
 const wanted = products.filter((p) => only.length === 0 || only.includes(p.slug));
 
 const hoodie = await catalogVariants(HOODIE_ID);
@@ -95,33 +116,66 @@ for (const sp of await api("GET", "/store/products?limit=100")) {
 }
 
 const result = {}; // externalId -> { size: sync_variant_id }
+const removed = []; // externalIds deleted from the store
+
+// Anything in the store that the catalogue no longer sells (a garment that
+// changed colour, say) goes, so orders can't reach it.
+if (prune) {
+  const live = new Set(products.flatMap((p) => p.garments.map((g) => `${p.slug}__${g.type}__${g.colour.slug}`)));
+  for (const [externalId, id] of existing) {
+    if (live.has(externalId) || !/^[a-z0-9-]+__(hoodie|tee)__[a-z]+$/.test(externalId)) continue;
+    await api("DELETE", `/store/products/${id}`);
+    existing.delete(externalId);
+    removed.push(externalId);
+    console.log(`pruned ${externalId} (#${id})`);
+    await sleep(1000);
+  }
+}
 
 for (const product of wanted) {
-  const printFile = path.resolve("public/artwork/print", `${product.slug}.png`);
+  const backFile = path.resolve("public/artwork/print", `${product.slug}.png`);
+  const crestFile = path.resolve("public/artwork/print/crest", `${product.slug}.png`);
   try {
-    await fs.access(printFile);
+    await fs.access(backFile);
   } catch {
     console.log(`\n${product.slug}: no print file, skipped (still "coming soon")`);
     continue;
   }
-  const fileUrl = await versioned(`${baseUrl}/${product.slug}.png`, printFile);
+  const hasCrest = await fs.access(crestFile).then(() => true, () => false);
+  if (!hasCrest) console.log(`\n${product.slug}: no crest print file — front left blank`);
+  const backUrl = await versioned(`${baseUrl}/${product.slug}.png`, backFile);
+  const backImg = pngSize(await fs.readFile(backFile));
+  const crestUrl = hasCrest ? await versioned(`${baseUrl}/crest/${product.slug}.png`, crestFile) : null;
+  const crestImg = hasCrest ? pngSize(await fs.readFile(crestFile)) : null;
 
   for (const g of product.garments) {
     const externalId = `${product.slug}__${g.type}__${g.colour.slug}`;
     const catalog = g.type === "hoodie" ? hoodie : tee;
     const name = `${product.name} — ${garmentLabel[g.type]}, ${g.colour.name}`;
 
+    if (recreate && existing.has(externalId)) {
+      await api("DELETE", `/store/products/${existing.get(externalId)}`);
+      console.log(`\n${name}: deleted #${existing.get(externalId)} to recreate`);
+      existing.delete(externalId);
+      await sleep(1000);
+    }
+
     let detail;
     if (existing.has(externalId)) {
       detail = await api("GET", `/store/products/${existing.get(externalId)}`);
       console.log(`\n${name}: already in store (#${detail.sync_product.id})`);
     } else {
-      const sync_variants = g.sizes.map((size) => ({
-        external_id: makeSku(product.slug, g, size),
-        variant_id: catalogVariantFor(catalog, g.colour.slug, size).id,
-        retail_price: (g.priceCents / 100).toFixed(2),
-        files: [{ type: "default", url: fileUrl }],
-      }));
+      const sync_variants = g.sizes.map((size) => {
+        const cv = catalogVariantFor(catalog, g.colour.slug, size);
+        const files = [{ type: "back", url: backUrl, position: backPosition(printfileFor(catalog, cv.id, "back"), backImg) }];
+        if (hasCrest) files.push({ type: "default", url: crestUrl, position: crestPosition(printfileFor(catalog, cv.id, "front"), crestImg) });
+        return {
+          external_id: makeSku(product.slug, g, size),
+          variant_id: cv.id,
+          retail_price: (g.priceCents / 100).toFixed(2),
+          files,
+        };
+      });
       const thumbnail = siteUrl ? `${siteUrl}${g.image}` : undefined;
       const created = await api("POST", "/store/products", {
         sync_product: { name, external_id: externalId, thumbnail },
@@ -155,6 +209,7 @@ if (start < 0 || end < 0) throw new Error("markers missing in products.ts");
 const currentMatch = src.slice(start, end).match(/= (\{[\s\S]*?\});\n/);
 const current = currentMatch ? JSON.parse(currentMatch[1]) : {};
 const merged = { ...current, ...result };
+for (const id of removed) delete merged[id];
 const block =
   "// @printful-variants-start\n" +
   "// Written by `npm run printful:products` — don't edit by hand.\n" +

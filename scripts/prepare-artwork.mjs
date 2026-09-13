@@ -1,9 +1,13 @@
-// Turns the raw design PNGs in public/artwork/ (baked black or cream
-// background) into print-ready transparent PNGs in public/artwork/print/.
-// The site composites these onto garment colours, and the Printful mockup
-// script uploads them as the print file.
+// Turns the raw design PNGs (baked black or cream background) into print-ready
+// transparent PNGs. Two kinds of file, one per product slug:
 //
-//   node scripts/prepare-artwork.mjs            # all designs
+//   public/artwork/<slug>.png        the big design    -> public/artwork/print/<slug>.png        (back print)
+//   public/artwork/crest/<slug>.png  the round crest   -> public/artwork/print/crest/<slug>.png  (left-chest print)
+//
+// The site composites these onto garment colours, and the Printful scripts
+// upload them as the print files.
+//
+//   node scripts/prepare-artwork.mjs            # all designs, both kinds
 //   node scripts/prepare-artwork.mjs blue-moon-inn
 //
 // Dark backgrounds: alpha = brightness, colour un-premultiplied against black.
@@ -16,16 +20,16 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const sharp = require("sharp");
 
-const SRC = path.resolve("public/artwork");
-const OUT = path.join(SRC, "print");
-await fs.mkdir(OUT, { recursive: true });
+const ART = path.resolve("public/artwork");
+const KINDS = [
+  { label: "back", src: ART, out: path.join(ART, "print") },
+  { label: "crest", src: path.join(ART, "crest"), out: path.join(ART, "print", "crest") },
+];
 
 const only = process.argv.slice(2);
-const files = (await fs.readdir(SRC)).filter((f) => f.endsWith(".png") && (only.length === 0 || only.includes(f.replace(/\.png$/, ""))));
 
-for (const file of files) {
-  const slug = file.replace(/\.png$/, "");
-  const { data, info } = await sharp(path.join(SRC, file)).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+async function knockOut(file, dest) {
+  const { data, info } = await sharp(file).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const { width, height } = info;
 
   // Sample the background from a border ring, 4px in.
@@ -80,10 +84,24 @@ for (const file of files) {
     out[q + 3] = Math.round(a * 255);
   }
 
-  const dest = path.join(OUT, `${slug}.png`);
   const result = await sharp(out, { raw: { width, height, channels: 4 } })
     .trim({ threshold: 8 })
     .png({ compressionLevel: 9 })
     .toFile(dest);
-  console.log(`${slug.padEnd(44)} ${dark ? "dark" : "light"} bg -> ${result.width}x${result.height}`);
+  return { dark, width: result.width, height: result.height };
+}
+
+for (const kind of KINDS) {
+  await fs.mkdir(kind.out, { recursive: true });
+  let files = [];
+  try {
+    files = (await fs.readdir(kind.src)).filter((f) => f.endsWith(".png") && (only.length === 0 || only.includes(f.replace(/\.png$/, ""))));
+  } catch {
+    continue;
+  }
+  for (const file of files) {
+    const slug = file.replace(/\.png$/, "");
+    const r = await knockOut(path.join(kind.src, file), path.join(kind.out, file));
+    console.log(`${kind.label.padEnd(6)} ${slug.padEnd(44)} ${r.dark ? "dark" : "light"} bg -> ${r.width}x${r.height}`);
+  }
 }

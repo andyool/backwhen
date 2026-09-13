@@ -33,12 +33,13 @@ export default async function ProductPage({ params }: { params: Params }) {
 
   const more = productsIn(collection.slug).filter((p) => p.slug !== product.slug).slice(0, 3);
   const hasArt = product.garments.map((g) => artExists(g.image));
+  const hasFront = product.garments.map((g) => artExists(g.imageFront));
   const variant = products.findIndex((p) => p.slug === product.slug);
   const artwork = artworkFor(product.slug);
 
   return (
     <>
-      <ProductView product={product} collection={collection} hasArt={hasArt} variant={variant} artwork={artwork} />
+      <ProductView product={product} collection={collection} hasArt={hasArt} hasFront={hasFront} variant={variant} artwork={artwork} />
       {more.length > 0 && (
         <section className="mx-auto mt-28 w-full max-w-page px-5 sm:px-8">
           <SplitText as="h2" text={`Nearby, in ${collection.world}`} className="mb-10 block text-[26px] sm:text-[32px]" />

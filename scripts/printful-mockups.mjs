@@ -1,14 +1,16 @@
 // Generates garment mockups with Printful's Mockup Generator and saves them
-// as public/products/<slug>-<garment>-<colour>.png, which the site picks up
-// automatically (see src/lib/art.ts).
+// as public/products/<slug>-<garment>-<colour>-back.png (the big design) and
+// -front.png (the left-chest crest), which the site picks up automatically
+// (see src/lib/art.ts).
 //
 //   PRINTFUL_API_KEY=... ARTWORK_BASE_URL=https://backwhen.com/artwork/print \
 //     node scripts/printful-mockups.mjs [slug ...]
 //
 //   node scripts/printful-mockups.mjs --list "as colour"   # find catalog product ids
 //
-// Printful downloads the print file from ARTWORK_BASE_URL/<slug>.png, so the
-// files in public/artwork/print/ must be reachable on the public internet
+// Printful downloads the print files from ARTWORK_BASE_URL/<slug>.png (back)
+// and ARTWORK_BASE_URL/crest/<slug>.png (front), so the files in
+// public/artwork/print/ must be reachable on the public internet
 // (deploy the site first, or host them anywhere public). Mockup tasks are
 // rate-limited to roughly two per minute; 12 garments takes ~6 minutes.
 //
@@ -20,6 +22,7 @@ import fs from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { backPosition, crestPosition } from "./lib/placement.mjs";
 
 const key = process.env.PRINTFUL_API_KEY;
 if (!key) {
@@ -93,29 +96,14 @@ function pngSize(buf) {
 }
 
 const printfileCache = new Map();
-async function printfileFor(productId, variantId) {
+async function printfileFor(productId, variantId, placement) {
   if (!printfileCache.has(productId)) printfileCache.set(productId, await api("GET", `/mockup-generator/printfiles/${productId}`));
   const info = printfileCache.get(productId);
   const vp = info.variant_printfiles.find((v) => v.variant_id === variantId);
-  const pfId = vp?.placements?.front ?? Object.values(vp?.placements ?? {})[0];
+  const pfId = vp?.placements?.[placement];
   const pf = info.printfiles.find((f) => f.printfile_id === pfId);
-  if (!pf) throw new Error(`No front printfile for variant ${variantId}`);
+  if (!pf) throw new Error(`No ${placement} printfile for variant ${variantId}`);
   return pf;
-}
-
-// Fit the design to a chest print: ~80% of the print width, a little below the top.
-function positionFor(pf, img) {
-  const scale = Math.min((pf.width * 0.8) / img.width, (pf.height * 0.9) / img.height);
-  const width = Math.round(img.width * scale);
-  const height = Math.round(img.height * scale);
-  return {
-    area_width: pf.width,
-    area_height: pf.height,
-    width,
-    height,
-    left: Math.round((pf.width - width) / 2),
-    top: Math.round(pf.height * 0.05),
-  };
 }
 
 // ---------------------------------------------------------------- main
@@ -166,33 +154,48 @@ console.log(`Hoodie: ${hoodie.product.title} (#${hoodie.product.id})`);
 console.log(`Tee:    ${tee.product.title} (#${tee.product.id})`);
 
 for (const product of wanted) {
-  const printFile = path.join(printDir, `${product.slug}.png`);
+  const backFile = path.join(printDir, `${product.slug}.png`);
+  const crestFile = path.join(printDir, "crest", `${product.slug}.png`);
   try {
-    await fs.access(printFile);
+    await fs.access(backFile);
   } catch {
     console.log(`\n${product.slug}: no print file in public/artwork/print — run scripts/prepare-artwork.mjs first. Skipped.`);
     continue;
   }
-  const imageUrl = await versioned(`${baseUrl}/${product.slug}.png`, printFile);
-  const img = pngSize(await fs.readFile(printFile));
+  const hasCrest = await fs.access(crestFile).then(() => true, () => false);
+  if (!hasCrest) console.log(`\n${product.slug}: no crest in public/artwork/print/crest — front will be blank.`);
+  const backUrl = await versioned(`${baseUrl}/${product.slug}.png`, backFile);
+  const backImg = pngSize(await fs.readFile(backFile));
+  const crestUrl = hasCrest ? await versioned(`${baseUrl}/crest/${product.slug}.png`, crestFile) : null;
+  const crestImg = hasCrest ? pngSize(await fs.readFile(crestFile)) : null;
 
   for (const g of product.garments) {
-    const dest = path.join(outDir, `${product.slug}-${g.type}-${g.colour.slug}.png`);
-    try {
-      await fs.access(dest);
-      console.log(`\n${path.basename(dest)} exists, skipped (delete it to regenerate)`);
-      continue;
-    } catch {}
+    const stem = path.join(outDir, `${product.slug}-${g.type}-${g.colour.slug}`);
+    const dests = { back: `${stem}-back.png`, front: `${stem}-front.png` };
+    const missing = [];
+    for (const [placement, dest] of Object.entries(dests)) {
+      if (placement === "front" && !hasCrest) continue;
+      await fs.access(dest).then(() => console.log(`\n${path.basename(dest)} exists, skipped (delete it to regenerate)`), () => missing.push(placement));
+    }
+    if (missing.length === 0) continue;
 
     const catalog = g.type === "hoodie" ? hoodie : tee;
     const variant = pickVariant(catalog, g.colour.slug);
-    console.log(`\n${product.name} — ${g.type}, ${g.colour.name} → variant ${variant.id} (${variant.color} / ${variant.size})`);
+    console.log(`\n${product.name} — ${g.type}, ${g.colour.name} → variant ${variant.id} (${variant.color} / ${variant.size}): ${missing.join(" + ")}`);
 
-    const pf = await printfileFor(catalog.product.id, variant.id);
+    const files = [];
+    if (missing.includes("back")) {
+      const pf = await printfileFor(catalog.product.id, variant.id, "back");
+      files.push({ placement: "back", image_url: backUrl, position: backPosition(pf, backImg) });
+    }
+    if (missing.includes("front")) {
+      const pf = await printfileFor(catalog.product.id, variant.id, "front");
+      files.push({ placement: "front", image_url: crestUrl, position: crestPosition(pf, crestImg) });
+    }
     const task = await api("POST", `/mockup-generator/create-task/${catalog.product.id}`, {
       variant_ids: [variant.id],
       format: "png",
-      files: [{ placement: "front", image_url: imageUrl, position: positionFor(pf, img) }],
+      files,
     });
 
     let result;
@@ -205,11 +208,16 @@ for (const product of wanted) {
     }
     if (!result || result.status !== "completed") throw new Error("Timed out waiting for mockup");
 
-    const mock = result.mockups.find((m) => m.placement === "front") ?? result.mockups[0];
-    const res = await fetch(mock.mockup_url);
-    await fs.writeFile(dest, Buffer.from(await res.arrayBuffer()));
-    console.log(`  saved ${path.relative(process.cwd(), dest)}`);
-    for (const extra of mock.extra ?? []) console.log(`  also available: ${extra.title} ${extra.url}`);
+    for (const placement of missing) {
+      const mock = result.mockups.find((m) => m.placement === placement);
+      if (!mock) {
+        console.log(`  no ${placement} mockup came back (${result.mockups.map((m) => m.placement).join(", ")})`);
+        continue;
+      }
+      const res = await fetch(mock.mockup_url);
+      await fs.writeFile(dests[placement], Buffer.from(await res.arrayBuffer()));
+      console.log(`  saved ${path.relative(process.cwd(), dests[placement])}`);
+    }
 
     // Mockup Generator allows ~2 tasks a minute.
     await sleep(25000);

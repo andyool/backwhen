@@ -17,7 +17,15 @@ Owner: Andreas, a teacher in Western Australia running this alongside a full-tim
 ## Architecture (deliberate — don't replace it)
 
 - Next.js 15 App Router, TypeScript, Tailwind 3. No database, no CMS, no auth.
-- Catalogue is code: `src/lib/products.ts`. 12 designs × (hoodie | tee) × colour × size.
+- Catalogue is code: `src/lib/products.ts`. 12 designs × (hoodie | tee) × size. Each design comes in ONE
+  colour (`set(slug, colour)`), and the hoodie and tee of a design are always the matching pair from
+  `hoodieColours` / `teeColours` (black ↔ faded black, coal ↔ faded coal, ecru ↔ faded bone). Never
+  put a cream design on a dark hoodie — the owner asked for the two garments to match (2026-09-13).
+- Every garment carries two prints: the big design on the **back**, and the round crest from
+  `public/artwork/crest/` small on the **left chest**. Placement geometry lives once in
+  `scripts/lib/placement.mjs`, used by both the mockup and the product-creation scripts. Mockups are
+  `public/products/<slug>-<type>-<colour>-back.png` and `-front.png` (`Garment.image` = back, the hero
+  everywhere; `Garment.imageFront` = front, shown on card hover and the product page's Front view).
 - Cart lives in the shopper's browser (`src/lib/cart.tsx`, localStorage). Nothing server-side.
 - Payment: Stripe Checkout (hosted page). `src/app/api/checkout/route.ts` rebuilds every price from the
   catalogue server-side — never trust prices from the browser. GST is inclusive.
@@ -100,8 +108,11 @@ Do not suggest moving to Shopify. Do not add a database unless a feature genuine
 
 - Generate Printful mockups into `public/products/` with `npm run printful:mockups` once the site is
   deployed (needs a public URL for `public/artwork/print/`). All twelve designs landed 2026-09-13 in
-  `public/artwork/` with Printful mockups in `public/products/`. Image tiers: Printful mockup → composited
-  print file (`GarmentMock`) → generated `SignArt`.
+  `public/artwork/` (crests in `public/artwork/crest/`) with Printful mockups in `public/products/`.
+  Image tiers: Printful mockup → composited print file (`GarmentMock`, `side="front"|"back"`) →
+  generated `SignArt`. After changing artwork or placement: `npm run artwork:prepare`, push (Pages
+  hosts the print files), delete the affected mockups and re-run `printful:mockups`, then
+  `npm run printful:products -- --recreate` (and `--prune` if a garment's colour changed).
 - All 24 sync products (12 designs × hoodie/tee) exist in store "backwhen" (18747782) since 2026-09-13, created from
   ~1000px print files — replace with 3000px+ artwork before real orders (re-upload via Printful
   dashboard or delete + re-run `printful:products`). Tee colour "black" is

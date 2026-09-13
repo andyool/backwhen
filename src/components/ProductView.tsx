@@ -19,21 +19,33 @@ export default function ProductView({
   product,
   collection,
   hasArt,
+  hasFront,
   variant,
   artwork,
 }: {
   product: Product;
   collection: Collection;
-  /** per garment, same order as product.garments: does the Printful mockup PNG exist */
+  /** per garment, same order as product.garments: does the Printful back mockup PNG exist */
   hasArt: boolean[];
+  /** same, for the front (chest crest) mockup */
+  hasFront: boolean[];
   variant: number;
   artwork: Artwork;
 }) {
   const [garmentIndex, setGarmentIndex] = useState(0);
-  const [view, setView] = useState<"garment" | "print">("garment");
+  const [view, setView] = useState<"back" | "front" | "print">("back");
   const garment = product.garments[garmentIndex];
   const hasDesign = !!(artwork.print || artwork.raw);
-  const alt = `${product.name} artwork on a ${garment.colour.name.toLowerCase()} ${garment.type}`;
+  const hasCrest = !!(artwork.crest || artwork.crestRaw);
+  const front = view === "front";
+  const alt = front
+    ? `${product.name} crest on the chest of a ${garment.colour.name.toLowerCase()} ${garment.type}`
+    : `${product.name} across the back of a ${garment.colour.name.toLowerCase()} ${garment.type}`;
+  const views: { key: "back" | "front" | "print"; label: string; show: boolean }[] = [
+    { key: "back", label: "Back", show: true },
+    { key: "front", label: "Front", show: hasCrest || hasFront.some(Boolean) },
+    { key: "print", label: "The print", show: !!artwork.raw },
+  ];
 
   return (
     <article className="mx-auto grid w-full max-w-page gap-10 px-5 pt-4 sm:px-8 lg:grid-cols-[3fr_2fr] lg:gap-16">
@@ -47,16 +59,16 @@ export default function ProductView({
               </div>
             ) : (
               <ProductImage
-                key={garment.image}
-                src={garment.image}
+                key={front ? garment.imageFront : garment.image}
+                src={front ? garment.imageFront : garment.image}
                 alt={alt}
                 priority
                 sizes="(min-width: 1024px) 60vw, 100vw"
-                hasArt={hasArt[garmentIndex]}
+                hasArt={front ? hasFront[garmentIndex] : hasArt[garmentIndex]}
                 className="curtain"
                 fallback={
-                  hasDesign ? (
-                    <GarmentMock artwork={artwork} colour={garment.colour} type={garment.type} alt={alt} priority sizes="(min-width: 1024px) 40vw, 64vw" />
+                  (front ? hasCrest : hasDesign) ? (
+                    <GarmentMock artwork={artwork} colour={garment.colour} type={garment.type} alt={alt} priority sizes="(min-width: 1024px) 40vw, 64vw" side={front ? "front" : "back"} />
                   ) : (
                     <SignArt name={product.name} place={product.place} printLines={product.printLines} colour={garment.colour} type={garment.type} variant={variant} />
                   )
@@ -64,24 +76,21 @@ export default function ProductView({
               />
             )}
           </Tilt>
-          {artwork.raw && (
+          {views.filter((v) => v.show).length > 1 && (
             <div className="mt-4 flex gap-2" data-reveal style={{ ["--d" as string]: "500ms" }}>
-              <button
-                type="button"
-                onClick={() => setView("garment")}
-                aria-pressed={view === "garment"}
-                className={`pop rounded-[2px] px-4 py-2 text-[15px] transition-colors duration-300 ${view === "garment" ? "bg-bone text-charcoal" : "bg-flannel text-bone hover:bg-seam"}`}
-              >
-                On the {garment.type}
-              </button>
-              <button
-                type="button"
-                onClick={() => setView("print")}
-                aria-pressed={view === "print"}
-                className={`pop rounded-[2px] px-4 py-2 text-[15px] transition-colors duration-300 ${view === "print" ? "bg-bone text-charcoal" : "bg-flannel text-bone hover:bg-seam"}`}
-              >
-                The print
-              </button>
+              {views
+                .filter((v) => v.show)
+                .map((v) => (
+                  <button
+                    key={v.key}
+                    type="button"
+                    onClick={() => setView(v.key)}
+                    aria-pressed={view === v.key}
+                    className={`pop rounded-[2px] px-4 py-2 text-[15px] transition-colors duration-300 ${view === v.key ? "bg-bone text-charcoal" : "bg-flannel text-bone hover:bg-seam"}`}
+                  >
+                    {v.label}
+                  </button>
+                ))}
             </div>
           )}
         </Parallax>

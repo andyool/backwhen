@@ -21,8 +21,10 @@ export type Garment = {
   type: GarmentType;
   colour: Colour;
   priceCents: number;
-  /** Path under /public. Falls back to a placeholder if the file is missing. */
+  /** Printful mockup of the back (the big design), under /public. Composited/generated fallbacks stand in when missing. */
   image: string;
+  /** Printful mockup of the front (the small left-chest crest), under /public. */
+  imageFront: string;
   sizes: string[];
   /** size -> Printful sync_variant_id. null = not set up yet. */
   variantIds: Record<string, number | null>;
@@ -72,14 +74,22 @@ export const collections: Collection[] = [
   },
 ];
 
-// Garment colours as AS Colour names them. Slugs are part of the SKU, so the
-// tee's "Faded black" keeps the slug "black".
-const colours = {
+// Garment colours as AS Colour names them. Every design is sold in ONE colour,
+// and the hoodie and tee of that design are the matching pair below (the 5082
+// tee is only made in "faded" shades, so its names differ). Slugs are part of
+// the SKU, so a colour keeps its slug across both garments.
+export type ColourSlug = "black" | "charcoal" | "cream";
+
+const hoodieColours: Record<ColourSlug, Colour> = {
   black: { slug: "black", name: "Black", hex: "#141414", onDark: true },
-  fadedBlack: { slug: "black", name: "Faded black", hex: "#353331", onDark: true },
-  charcoal: { slug: "charcoal", name: "Washed charcoal", hex: "#3A3733", onDark: true },
-  cream: { slug: "cream", name: "Cream", hex: "#EFE7D3" },
-} satisfies Record<string, Colour>;
+  charcoal: { slug: "charcoal", name: "Coal", hex: "#2B2B2D", onDark: true },
+  cream: { slug: "cream", name: "Ecru", hex: "#F5EFDD" },
+};
+const teeColours: Record<ColourSlug, Colour> = {
+  black: { slug: "black", name: "Faded black", hex: "#3E3E3E", onDark: true },
+  charcoal: { slug: "charcoal", name: "Faded coal", hex: "#45463F", onDark: true },
+  cream: { slug: "cream", name: "Faded bone", hex: "#F0EADF" },
+};
 
 // Sizes AS Colour actually makes: 5101 hoodie stops at 2XL, 5082 tee goes to 3XL.
 const HOODIE_SIZES = ["S", "M", "L", "XL", "2XL"];
@@ -285,7 +295,8 @@ function hoodie(slug: string, colour: Colour): Garment {
     type: "hoodie",
     colour,
     priceCents: HOODIE_PRICE,
-    image: `/products/${slug}-hoodie-${colour.slug}.png`,
+    image: `/products/${slug}-hoodie-${colour.slug}-back.png`,
+    imageFront: `/products/${slug}-hoodie-${colour.slug}-front.png`,
     sizes: HOODIE_SIZES,
     variantIds: idsFor(slug, "hoodie", colour.slug, HOODIE_SIZES),
   };
@@ -296,10 +307,17 @@ function tee(slug: string, colour: Colour): Garment {
     type: "tee",
     colour,
     priceCents: TEE_PRICE,
-    image: `/products/${slug}-tee-${colour.slug}.png`,
+    image: `/products/${slug}-tee-${colour.slug}-back.png`,
+    imageFront: `/products/${slug}-tee-${colour.slug}-front.png`,
     sizes: TEE_SIZES,
     variantIds: idsFor(slug, "tee", colour.slug, TEE_SIZES),
   };
+}
+
+/** Both garments of a design in the same colour. `first` is the one shown on cards and picked by default. */
+function set(slug: string, colour: ColourSlug, first: GarmentType = "hoodie"): Garment[] {
+  const pair = [hoodie(slug, hoodieColours[colour]), tee(slug, teeColours[colour])];
+  return first === "hoodie" ? pair : pair.reverse();
 }
 
 export const products: Product[] = [
@@ -319,7 +337,7 @@ export const products: Product[] = [
       "a cow": "Watching. Always watching.",
       "spire": "You could hear the bell from the swamp.",
     },
-    garments: [hoodie("lumbridge-general-store", colours.black), tee("lumbridge-general-store", colours.fadedBlack)],
+    garments: set("lumbridge-general-store", "black"),
   },
   {
     slug: "blue-moon-inn",
@@ -335,7 +353,7 @@ export const products: Product[] = [
       "cabbages": "Nobody asked. Nobody ever asks.",
       "crescent moon": "Painted, not real. The real one is behind the wall.",
     },
-    garments: [hoodie("blue-moon-inn", colours.charcoal), tee("blue-moon-inn", colours.fadedBlack)],
+    garments: set("blue-moon-inn", "charcoal"),
   },
   {
     slug: "karamja-fishing-co",
@@ -352,7 +370,7 @@ export const products: Product[] = [
       "volcano": "Still smoking. Don't go in without something to light.",
       "Return ferry": "Thirty coins. Each way. No, the price doesn't come down.",
     },
-    garments: [tee("karamja-fishing-co", colours.cream), hoodie("karamja-fishing-co", colours.charcoal)],
+    garments: set("karamja-fishing-co", "cream", "tee"),
   },
   {
     slug: "draynor-manor",
@@ -369,7 +387,7 @@ export const products: Product[] = [
       "crows": "They know something. They aren't saying.",
       "full moon": "Same phase every night. Nobody has mentioned it.",
     },
-    garments: [hoodie("draynor-manor", colours.black), tee("draynor-manor", colours.fadedBlack)],
+    garments: set("draynor-manor", "black"),
   },
   {
     slug: "al-kharid-scimitar-works",
@@ -386,7 +404,7 @@ export const products: Product[] = [
       "scimitars": "Curved, fast, and yours for a price.",
       "palm trees": "The only shade for miles.",
     },
-    garments: [tee("al-kharid-scimitar-works", colours.fadedBlack), hoodie("al-kharid-scimitar-works", colours.black)],
+    garments: set("al-kharid-scimitar-works", "black", "tee"),
   },
   {
     slug: "barbarian-village-fishing-and-firemaking",
@@ -403,7 +421,7 @@ export const products: Product[] = [
       "mine entrance": "Coal, if you're patient. Company, if you're not.",
       "fast river": "The salmon jump. You miss. The salmon jump.",
     },
-    garments: [hoodie("barbarian-village-fishing-and-firemaking", colours.charcoal), tee("barbarian-village-fishing-and-firemaking", colours.fadedBlack)],
+    garments: set("barbarian-village-fishing-and-firemaking", "charcoal"),
   },
 
   // ------------------------------------------------------------ Elder Scrolls
@@ -422,7 +440,7 @@ export const products: Product[] = [
       "lighthouse": "Somebody keeps it lit. Nobody says who.",
       "your sign": "Choose carefully. You'll be stuck with it.",
     },
-    garments: [hoodie("census-and-excise-office", colours.black), tee("census-and-excise-office", colours.fadedBlack)],
+    garments: set("census-and-excise-office", "black"),
   },
   {
     slug: "south-wall-cornerclub",
@@ -439,7 +457,7 @@ export const products: Product[] = [
       "certain arrangements": "You'd have to ask inside. Bring coin and a reason.",
       "ash hills": "The wind comes off them some afternoons. Keep your mouth shut.",
     },
-    garments: [hoodie("south-wall-cornerclub", colours.charcoal), tee("south-wall-cornerclub", colours.fadedBlack)],
+    garments: set("south-wall-cornerclub", "charcoal"),
   },
   {
     slug: "vivec-canton-ferry",
@@ -456,7 +474,7 @@ export const products: Product[] = [
       "gondola": "Faster than walking. Slower than you'd like.",
       "the mountain": "Best seen from a distance. Preferably a moving one.",
     },
-    garments: [tee("vivec-canton-ferry", colours.fadedBlack), hoodie("vivec-canton-ferry", colours.black)],
+    garments: set("vivec-canton-ferry", "black", "tee"),
   },
   {
     slug: "newlands-lodge",
@@ -473,7 +491,7 @@ export const products: Product[] = [
       "stone bridge": "Covered, so you can cross in the rain without noticing the rain.",
       "nicest town": "Ask the locals. They'll agree, quietly.",
     },
-    garments: [hoodie("newlands-lodge", colours.charcoal), tee("newlands-lodge", colours.fadedBlack)],
+    garments: set("newlands-lodge", "charcoal"),
   },
   {
     slug: "surilie-brothers-vineyard",
@@ -490,7 +508,7 @@ export const products: Product[] = [
       "the castle": "The count doesn't take visitors. The vineyard does.",
       "wine-label oval": "Every bottle in the county has one. This one is better drawn.",
     },
-    garments: [tee("surilie-brothers-vineyard", colours.cream), hoodie("surilie-brothers-vineyard", colours.charcoal)],
+    garments: set("surilie-brothers-vineyard", "cream", "tee"),
   },
   {
     slug: "jerall-view-inn",
@@ -507,7 +525,7 @@ export const products: Product[] = [
       "the peaks": "The pass is open. The pass is always, technically, open.",
       "July": "Wear it anyway. Nobody here will judge.",
     },
-    garments: [hoodie("jerall-view-inn", colours.black), tee("jerall-view-inn", colours.fadedBlack)],
+    garments: set("jerall-view-inn", "black"),
   },
 ];
 

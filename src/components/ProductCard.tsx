@@ -13,13 +13,16 @@ export default function ProductCard({ product, priority, index = 0 }: { product:
   const variant = products.findIndex((p) => p.slug === product.slug);
   const delay = `${(index % 3) * 110}ms`;
   const artwork = artworkFor(product.slug);
-  const alt = `${product.name} on a ${hero.colour.name.toLowerCase()} ${hero.type}`;
+  const alt = `${product.name} on the back of a ${hero.colour.name.toLowerCase()} ${hero.type}`;
+  const altFront = `${product.name} crest on the chest of a ${hero.colour.name.toLowerCase()} ${hero.type}`;
   const fallback =
     artwork.print || artwork.raw ? (
       <GarmentMock artwork={artwork} colour={hero.colour} type={hero.type} alt={alt} priority={priority} />
     ) : (
       <SignArt name={product.name} place={product.place} printLines={product.printLines} colour={hero.colour} type={hero.type} variant={variant} />
     );
+  // The front (crest) shows on hover; only when there's something to show.
+  const hasFront = artExists(hero.imageFront) || !!(artwork.crest || artwork.crestRaw);
   return (
     <Link
       href={`/products/${product.slug}`}
@@ -37,6 +40,16 @@ export default function ProductCard({ product, priority, index = 0 }: { product:
           className="curtain"
           fallback={fallback}
         />
+        {hasFront && (
+          <div className="card-flip absolute inset-0" aria-hidden>
+            <ProductImage
+              src={hero.imageFront}
+              alt={altFront}
+              hasArt={artExists(hero.imageFront)}
+              fallback={<GarmentMock artwork={artwork} colour={hero.colour} type={hero.type} alt={altFront} side="front" />}
+            />
+          </div>
+        )}
         <span className="hover-label" aria-hidden>
           <span className="hover-verb">Wear</span> {product.name}
         </span>

@@ -8,6 +8,9 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // A second dev server (another port) can build into its own folder so it
+  // doesn't trample .next while the first one is running.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   ...(isStatic
     ? {
         output: "export",
