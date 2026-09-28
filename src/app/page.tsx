@@ -1,176 +1,196 @@
 import Link from "next/link";
+import Image from "next/image";
 import ProductGrid from "@/components/ProductGrid";
+import ShopFilter from "@/components/ShopFilter";
+import HeroStage, { type StageItem } from "@/components/HeroStage";
+import Loupe from "@/components/Loupe";
+import Faq from "@/components/Faq";
 import Fog from "@/components/fx/Fog";
 import SplitText from "@/components/fx/SplitText";
 import Magnetic from "@/components/fx/Magnetic";
 import Marquee from "@/components/fx/Marquee";
-import DrawSign from "@/components/fx/DrawSign";
-import Counter from "@/components/fx/Counter";
-import { collections, products, productsIn } from "@/lib/products";
+import { collections, garmentLabel, products, productsIn } from "@/lib/products";
+import { zones } from "@/lib/shipping";
+import { money } from "@/lib/format";
+import { asset } from "@/lib/paths";
 import { site } from "@/lib/site";
 
+const HOODIE = products[0].garments.find((g) => g.type === "hoodie")!.priceCents;
+const TEE = products[0].garments.find((g) => g.type === "tee")!.priceCents;
+const freeAu = zones.find((z) => z.id === "au")?.freeOverCents;
+
+// Dark garments first: they carry the bone ink best at hero size.
+const stage: StageItem[] = [...products]
+  .sort((a, b) => Number(a.garments[0].colour.slug === "cream") - Number(b.garments[0].colour.slug === "cream"))
+  .map((p) => {
+    const g = p.garments.find((x) => x.type === "hoodie") ?? p.garments[0];
+    return { slug: p.slug, name: p.name, line: p.line, image: g.image, price: money(g.priceCents), garment: garmentLabel[g.type] };
+  });
+
+const featured = products.find((p) => p.slug === "census-and-excise-office") ?? products[0];
+
 export default function HomePage() {
-  const places = products.map((p) => p.name);
-  const lines = products.flatMap((p) => p.printLines[0]);
+  const filters = [
+    { key: "all", label: "All", count: products.length },
+    ...collections.map((c) => ({ key: c.slug, label: c.name, count: productsIn(c.slug).length })),
+  ];
 
   return (
     <>
       {/* ------------------------------------------------------------ hero */}
-      <section className="relative bleed-header flex min-h-[100svh] flex-col justify-end overflow-hidden">
+      <section className="relative bleed-header overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <Fog />
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-charcoal to-transparent" />
         </div>
-        <div className="mx-auto w-full max-w-page px-5 pb-16 sm:px-8 sm:pb-20">
-          <SplitText
-            as="p"
-            text="Cabins for rent. Ales, beds, poor company. All new arrivals report here."
-            className="display-soft block max-w-[30ch] text-[22px] text-faded sm:text-[30px]"
-            stagger={28}
-          />
-          <SplitText
-            as="h1"
-            text="Merch from places that don’t exist."
-            className="display mt-6 block max-w-[12ch] text-[15vw] sm:text-[88px] lg:text-[124px]"
-            stagger={70}
-            delay={250}
-          />
-          <div className="mt-10 grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
-            <p className="max-w-[46ch] text-[18px] text-faded sm:text-[20px]" data-reveal style={{ ["--d" as string]: "700ms" }}>
-              The general store, the inn, the fishing wharf, the census office. Drawn like an old shop sign, printed in cream ink on heavyweight fleece. No logos. If you know, you know.
+        <div className="mx-auto grid w-full max-w-page items-center gap-x-12 gap-y-6 px-5 pb-12 pt-6 sm:px-8 lg:min-h-[calc(100svh-var(--header-h,72px))] lg:grid-cols-[1fr_1.05fr] lg:pb-16 lg:pt-10">
+          <div>
+            <p className="small hero-in text-faded" style={{ ["--d" as string]: "0ms" }}>
+              {products.length} places · Hoodies {money(HOODIE)} · Tees {money(TEE)}
             </p>
-            <div className="flex flex-wrap gap-3" data-reveal style={{ ["--d" as string]: "850ms" }}>
-              {collections.map((c) => (
-                <Magnetic key={c.slug}>
-                  <Link href={`/collections/${c.slug}`} className="btn-ghost">
-                    {c.name}
-                  </Link>
-                </Magnetic>
-              ))}
+            <h1 className="display hero-in mt-3 text-[12.5vw] leading-[0.95] sm:text-[72px] lg:text-[96px] xl:text-[108px]" style={{ ["--d" as string]: "60ms" }}>
+              Merch from places that don&rsquo;t exist.
+            </h1>
+            <p className="hero-in mt-5 hidden max-w-[44ch] text-[19px] text-faded sm:block" style={{ ["--d" as string]: "140ms" }}>
+              The inns, shops and wharves you spent your teens in, drawn like old shop signs and printed on heavyweight hoodies and tees. No logos. If you know, you know.
+            </p>
+            <div className="hero-in mt-8 hidden flex-wrap items-center gap-3 lg:flex" style={{ ["--d" as string]: "220ms" }}>
+              <Magnetic>
+                <Link href="#shop" className="btn-primary !px-8 !py-4 !text-[17px]">
+                  Shop all {products.length} places
+                </Link>
+              </Magnetic>
+              <Link href="#look-closer" className="sweep ml-3 text-faded hover:text-bone">
+                Look closer
+              </Link>
             </div>
+            <ul className="small hero-in mt-10 hidden gap-x-6 gap-y-2 text-faded lg:flex lg:flex-wrap" style={{ ["--d" as string]: "300ms" }}>
+              <li className="tick">Printed to order</li>
+              {freeAu && <li className="tick">Free AU shipping over {money(freeAu)}</li>}
+              <li className="tick">Apple Pay · Google Pay · card</li>
+            </ul>
+          </div>
+
+          <div className="hero-in" style={{ ["--d" as string]: "120ms" }}>
+            <HeroStage items={stage} />
+          </div>
+
+          <div className="hero-in lg:hidden" style={{ ["--d" as string]: "200ms" }}>
+            <Link href="#shop" className="btn-primary w-full !py-4 !text-[17px]">
+              Shop all {products.length} places
+            </Link>
+            <p className="small mt-3 text-center text-faded">
+              Printed to order{freeAu ? ` · Free AU shipping over ${money(freeAu)}` : ""}
+            </p>
           </div>
         </div>
-        <p className="small absolute bottom-6 right-5 hidden items-center gap-3 text-faded/70 sm:right-8 md:flex" data-reveal="fade" style={{ ["--d" as string]: "1400ms" }}>
-          <span className="drift inline-block h-10 w-px bg-faded/50" />
-          Scroll
+      </section>
+
+      {/* ------------------------------------------------------------ shop */}
+      <section id="shop" className="mx-auto w-full max-w-page scroll-mt-24 px-5 pt-10 sm:px-8 sm:pt-16" data-compass="shop">
+        <div className="mb-8 flex flex-col gap-2 sm:mb-10">
+          <SplitText as="h2" text="Pick your place." className="display block text-[40px] sm:text-[60px]" stagger={60} />
+          <p className="max-w-[52ch] text-faded" data-reveal>
+            Big engraved print on the back, the place&rsquo;s crest small on the chest. Hover or tap through to see both.
+          </p>
+        </div>
+        <ShopFilter filters={filters} prices={{ hoodie: money(HOODIE), tee: money(TEE) }}>
+          <ProductGrid products={products} priorityCount={4} garment={null} />
+        </ShopFilter>
+      </section>
+
+      {/* ------------------------------------------------------------ insight */}
+      <section className="mx-auto mt-28 w-full max-w-page px-5 sm:mt-40 sm:px-8" data-compass="insight">
+        <p className="display-soft max-w-[18ch] text-[34px] leading-[1.08] text-faded sm:text-[64px]" data-reveal>
+          To anyone else, it&rsquo;s a nice old lodge hoodie.
+        </p>
+        <p className="display mt-3 text-[48px] leading-none sm:text-[104px]" data-reveal style={{ ["--d" as string]: "200ms" }}>
+          To you, it&rsquo;s 2004.
         </p>
       </section>
 
-      {/* ------------------------------------------------------------ ticker */}
-      <section className="border-y border-seam/60 py-5" data-reveal="fade">
-        <Marquee duration={70}>
-          {places.map((p) => (
-            <span key={p} className="sign flex items-center gap-12 text-[13px] text-faded">
-              {p}
-              <span className="h-1 w-1 rounded-full bg-olive" aria-hidden />
-            </span>
-          ))}
-        </Marquee>
-        <Marquee duration={90} reverse className="mt-3">
-          {lines.map((l, i) => (
-            <span key={i} className="display-soft flex items-center gap-12 text-[18px] text-faded/70">
-              {l}
-              <span className="h-px w-8 bg-seam" aria-hidden />
-            </span>
-          ))}
-        </Marquee>
+      {/* ------------------------------------------------------------ look closer */}
+      <section id="look-closer" className="mx-auto mt-24 grid w-full max-w-page scroll-mt-24 items-center gap-10 px-5 sm:mt-32 sm:px-8 lg:grid-cols-[1fr_1fr] lg:gap-20" data-compass="closer">
+        <div data-reveal="scale">
+          <Loupe src={asset(`/artwork/${featured.slug}.png`)} className="mx-auto aspect-[2/3] w-full max-w-[520px] overflow-hidden bg-black">
+            <Image src={asset(`/artwork/${featured.slug}.png`)} alt={`${featured.name} artwork`} fill sizes="(min-width: 1024px) 40vw, 90vw" className="object-cover" />
+          </Loupe>
+          <p className="small mt-3 text-center text-faded">Drag across it. {featured.name}, {featured.place}.</p>
+        </div>
+        <div className="flex flex-col gap-10">
+          <div>
+            <SplitText as="h2" text="Drawn from the town, not the box art." className="display block text-[36px] sm:text-[52px]" stagger={50} />
+            <p className="mt-5 max-w-[46ch] text-[18px] text-faded" data-reveal>
+              Every design is drawn line by line from the place itself — the rooflines, the bridges, the lighthouse in the fog — then set like a 1970s lodge would have printed its own merch: a name, an address line, an est. date.
+            </p>
+          </div>
+          <dl className="grid grid-cols-3 gap-6 border-t border-seam pt-8" data-reveal>
+            {[
+              ["places so far", products.length],
+              ["logos", 0],
+              ["characters", 0],
+            ].map(([label, value]) => (
+              <div key={label} className="flex flex-col-reverse">
+                <dt className="small text-faded">{label}</dt>
+                <dd className="display text-[44px] sm:text-[64px]">{value}</dd>
+              </div>
+            ))}
+          </dl>
+          <ol className="flex flex-col gap-6">
+            {[
+              ["Pick a place", "Hoodie or tee, your size. One colour per design, matched to the ink."],
+              ["Printed for you", "It goes on the press after you order, so nothing sits in a warehouse. 2–5 business days."],
+              ["Shipped from nearby", "From the print house closest to you, Brisbane for most of Australia, with tracking."],
+            ].map(([t, d], i) => (
+              <li key={t} className="grid grid-cols-[44px_1fr] gap-4" data-reveal style={{ ["--d" as string]: `${i * 90}ms` }}>
+                <span className="display-soft text-[28px] leading-none text-faded">{String(i + 1).padStart(2, "0")}</span>
+                <div>
+                  <p className="text-[19px]">{t}</p>
+                  <p className="mt-1 text-faded">{d}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
       </section>
 
-      {/* ------------------------------------------------------------ collections */}
-      {collections.map((c, i) => (
-        <section key={c.slug} className="mx-auto w-full max-w-page px-5 pt-24 sm:px-8 sm:pt-32" data-compass={c.slug}>
-          <div className="mb-10 grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-end md:gap-10">
-            <p className="display-soft text-[64px] leading-none text-faded/40 sm:text-[96px]" data-reveal="fade">
-              {String(i + 1).padStart(2, "0")}
-            </p>
-            <div>
-              <p className="text-faded" data-reveal>
-                {c.world}
-              </p>
-              <SplitText as="h2" text={c.name} className="display block text-[40px] sm:text-[56px]" stagger={60} />
-            </div>
-            <Link href={`/collections/${c.slug}`} className="sweep self-end text-faded hover:text-bone" data-reveal style={{ ["--d" as string]: "200ms" }}>
-              All {productsIn(c.slug).length} places
-            </Link>
-          </div>
-          <ProductGrid products={productsIn(c.slug).slice(0, 3)} priorityCount={i === 0 ? 3 : 0} />
-        </section>
-      ))}
-
-      {/* ------------------------------------------------------------ how it's made */}
-      <section className="mx-auto mt-32 grid w-full max-w-page gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-20" data-compass="made">
-        <div className="lg:sticky lg:top-32 lg:self-start">
-          <DrawSign className="w-full max-w-[560px] text-bone/80" />
+      {/* ------------------------------------------------------------ faq */}
+      <section className="mx-auto mt-28 grid w-full max-w-page gap-8 px-5 sm:mt-40 sm:px-8 lg:grid-cols-[1fr_1.4fr] lg:gap-20" data-compass="faq">
+        <div>
+          <SplitText as="h2" text="Before you ask." className="display block text-[36px] sm:text-[52px]" stagger={60} />
+          <p className="mt-4 max-w-[36ch] text-faded" data-reveal>
+            Anything else: <a className="link" href={`mailto:${site.email}`}>{site.email}</a>. A person answers.
+          </p>
         </div>
-        <div className="flex flex-col gap-16 lg:pt-10">
-          <div data-reveal>
-            <SplitText as="h2" text="Drawn from the town, not the box art." className="display block text-[36px] sm:text-[52px]" stagger={50} />
-          </div>
-          <div className="grid gap-10 sm:grid-cols-2">
-            <div data-reveal>
-              <p className="display text-[64px] text-bone sm:text-[80px]">
-                <Counter to={products.length} />
-              </p>
-              <p className="mt-1 text-faded">places, so far</p>
-            </div>
-            <div data-reveal style={{ ["--d" as string]: "100ms" }}>
-              <p className="display text-[64px] text-bone sm:text-[80px]">
-                <Counter to={1} />
-              </p>
-              <p className="mt-1 text-faded">colour of ink</p>
-            </div>
-            <div data-reveal style={{ ["--d" as string]: "200ms" }}>
-              <p className="display text-[64px] text-bone sm:text-[80px]">
-                <Counter to={0} />
-              </p>
-              <p className="mt-1 text-faded">logos, characters or box art</p>
-            </div>
-            <div data-reveal style={{ ["--d" as string]: "300ms" }}>
-              <p className="display text-[64px] text-bone sm:text-[80px]">
-                <Counter to={2001} />
-              </p>
-              <p className="mt-1 text-faded">the year it all starts</p>
-            </div>
-          </div>
-          <div className="flex flex-col gap-8">
-            <div data-reveal>
-              <h3 className="text-[22px]">Made to order</h3>
-              <p className="mt-2 text-faded">
-                Nothing sits in a warehouse. Each piece is printed after you order it, at the print house nearest you, and posted within a week.
-              </p>
-            </div>
-            <div data-reveal>
-              <h3 className="text-[22px]">Reads as vintage</h3>
-              <p className="mt-2 text-faded">
-                One-colour engraved artwork, a fake address, an est. date. To anyone else it&rsquo;s a nice old lumber-mill hoodie. To you it&rsquo;s 2004.
-              </p>
-            </div>
-            <div data-reveal>
-              <h3 className="text-[22px]">Made in WA</h3>
-              <p className="mt-2 text-faded">
-                {site.name} is one person in Western Australia who spent too long in these places. Every design is drawn from the town itself, not the box art.
-              </p>
-            </div>
-          </div>
-        </div>
+        <Faq />
       </section>
 
       {/* ------------------------------------------------------------ closing */}
-      <section className="mx-auto mt-36 w-full max-w-page px-5 sm:px-8" data-compass="end">
-        <SplitText as="p" text="If you know, you know." className="display-soft block text-[13vw] text-bone sm:text-[96px] lg:text-[140px]" stagger={90} />
-        <div className="mt-8 flex flex-wrap items-center gap-6" data-reveal style={{ ["--d" as string]: "400ms" }}>
-          <Magnetic>
-            <Link href={`/collections/${collections[0].slug}`} className="btn-primary">
-              Start with {collections[0].world}
+      <section className="mt-28 sm:mt-40" data-compass="end">
+        <div className="border-y border-seam/60 py-5" aria-hidden>
+          <Marquee duration={80}>
+            {products.map((p) => (
+              <span key={p.slug} className="sign flex items-center gap-12 text-[13px] text-faded">
+                {p.name}
+                <span className="h-1 w-1 rounded-full bg-olive" />
+              </span>
+            ))}
+          </Marquee>
+        </div>
+        <div className="mx-auto w-full max-w-page px-5 pt-20 sm:px-8">
+          <SplitText as="p" text="If you know, you know." className="display-soft block text-[13vw] text-bone sm:text-[96px] lg:text-[128px]" stagger={90} />
+          <div className="mt-8 flex flex-wrap items-center gap-6" data-reveal style={{ ["--d" as string]: "300ms" }}>
+            <Magnetic>
+              <Link href="#shop" className="btn-primary !px-8 !py-4 !text-[17px]">
+                Find your place
+              </Link>
+            </Magnetic>
+            <Link href="/about" className="sweep text-faded hover:text-bone">
+              Why this exists
             </Link>
-          </Magnetic>
-          <Link href="/about" className="sweep text-faded hover:text-bone">
-            Why this exists
-          </Link>
+          </div>
         </div>
       </section>
-
-      <p className="sr-only">{products.length} designs available.</p>
     </>
   );
 }

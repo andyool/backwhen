@@ -49,30 +49,50 @@ Do not suggest moving to Shopify. Do not add a database unless a feature genuine
   `rust #A5552E` reserved for cream-tee designs. These are the garments' own colours, not a theme.
 - One typeface: Fraunces via `next/font`, with optical-size variation doing the hierarchy
   (`.display`, `.display-soft`, `.sign`, `.small` in `globals.css`). Do not add a second font.
-- No cards, no drop shadows, no borders as decoration, no gradient washes, no icons for their own sake,
-  no ALL-CAPS eyebrow labels, no "→" on links. Images bleed; spacing does the structure.
-- Motion layer (added 2026-09-13 at the owner's request — keep it, extend it in the same idiom):
-  everything lives in `src/components/fx/` and `globals.css`, no animation libraries.
+- Restraint rules loosened in the 2026-09-28 overhaul (owner asked for a complete redesign for
+  clarity, speed and wow): the garment tiles use a soft radial spotlight (`.tile`, `.product-card
+  .card-img`), the hero garment floats with a drop shadow, filter chips are pill-shaped. Still: no
+  icons for their own sake, no ALL-CAPS eyebrow labels, spacing does the structure.
+- Conversion layer (2026-09-28 overhaul — keep it, it's why the site exists): product first, above the
+  fold on a phone. Home = `HeroStage` (garment on a CSS-3D turntable that turns to the next design every
+  3.4s, swipeable, ticks) → `ShopFilter` grid (collection chips + Hoodies/Tees switch; server-rendered
+  cards carry both garments and CSS hides one via `data-garment`/`data-g`, so the switch never
+  re-renders) → insight line → `Loupe` artwork → how it works → `Faq` → closing. `/shop` lists all 12.
+  Product page: swipe rail gallery (desktop grid), Hoodie/Tee options with prices, sizes, size guide
+  (`src/lib/sizes.ts`, cm from Printful's tables), trust ticks, Web Share button, accordions, and a
+  sticky `.buybar` on phones. Add to cart opens `CartDrawer` (slide-over; `CartContents` is shared with
+  `/cart`): free-shipping progress, "complete the set" (the other garment of the last-added design in
+  the same size, one tap), country auto-guessed from time zone (`initialCountry`), one Checkout button.
+  The shop's garment choice persists in sessionStorage (`GARMENT_PREF_KEY`) and product pages open on
+  it; `?g=tee` in a link forces the tee (use it in tee ads).
+- Ads plumbing: `Analytics.tsx` loads the Meta / TikTok pixels only when `NEXT_PUBLIC_META_PIXEL_ID` /
+  `NEXT_PUBLIC_TIKTOK_PIXEL_ID` are set; `track()` in `src/lib/track.ts` sends ViewContent, AddToCart,
+  InitiateCheckout, Purchase (success page, once per order). `src/lib/attribution.ts` keeps utm_* and
+  click ids for 30 days and the checkout route writes them into the Stripe session metadata, so every
+  sale shows its campaign in the Stripe dashboard. Share images live in `public/og/`
+  (`node scripts/make-og.mjs` after adding designs).
+- Motion layer: everything lives in `src/components/fx/` and `globals.css`, no animation libraries.
   `Fog` (WebGL contour-line field behind the hero and 404), `SplitText` + `RevealObserver`
-  (`data-reveal` attribute + `--d` delay drives every scroll reveal, server components included),
-  `Tilt` and the `.curtain` image reveal on product cards, `Magnetic` buttons, `Marquee`, `DrawSign`
-  (engraved inn drawn on scroll), `Counter`, `Parallax`, `SmoothScroll` (inertial wheel, native on
-  touch), `Preloader` (once per
-  session), `template.tsx` page wipe, film grain via `body::after`. All of it respects
-  `prefers-reduced-motion`. Performance rule learned the hard way: nothing may change per scroll frame on
-  large layers (no skew-with-velocity, no animated or blended full-page grain, no live SVG `feTurbulence`
-  filters on cards — cloth texture is a tiled data-URI image via `.cloth`). `SignArt` renders a generated engraved-sign mock-up on the garment colour
-  whenever the artwork PNG is missing (`src/lib/art.ts` checks the disk server-side).
+  (`data-reveal` attribute + `--d` delay drives scroll reveals below the fold), `.hero-in` (pure-CSS
+  entrance for anything above the fold — never hide first-screen content behind JS), `Tilt` on cards,
+  `Magnetic` buttons, `Marquee`, `DrawSign` (about page), film grain via `body::after`, a 0.35s page
+  fade. Removed in the overhaul because they cost ad traffic time or felt laggy: the session
+  preloader, the inertial `SmoothScroll`, the page wipe, the scroll progress bar, `Parallax`,
+  `Counter`. Don't bring them back. All motion respects `prefers-reduced-motion`. Performance rule
+  learned the hard way: nothing may change per scroll frame on large layers (no skew-with-velocity, no
+  animated or blended full-page grain, no live SVG `feTurbulence` filters on cards — cloth texture is a
+  tiled data-URI image via `.cloth`). `SignArt` renders a generated engraved-sign mock-up on the
+  garment colour whenever the artwork PNG is missing (`src/lib/art.ts` checks the disk server-side).
 - Nods (added 2026-09-13 at the owner's request: "if you know, you know", through design and function, never
   franchise words). Keep them, add more in the same spirit, never name a game. Right-click on anything
   with `data-examine` opens a "Choose option" menu (Wear / Examine / Walk here / Cancel, `ChooseOption`);
   Examine and other one-liners print in the bottom-left `Chatbox` via `say()`. Product cards show a
   "Wear <name>" hover label (verb then target). Clicks flash a small X (`ClickMarker`: yellow on ground,
-  red on something usable). The cart holds 28 items (`MAX_ITEMS`), overflow says "Not enough inventory
-  space." Product stories are `Dialogue`: phrases in `topics` open a reply beneath. A faint `Compass`
-  strip along the bottom (desktop) turns with scroll, markers from `data-compass`. Preloader shows a bar
-  and "Loading — please wait." The giant footer wordmark says "Nothing interesting happens." on click.
-  404 says "You can't reach that." After adding to cart the link reads "Click here to continue."
+  red on something usable). The cart is "Inventory" and holds 28 items (`MAX_ITEMS`, shown as n / 28),
+  overflow says "Not enough inventory space." Product stories are `Dialogue`: phrases in `topics` open a
+  reply beneath. A faint `Compass` strip along the bottom (desktop) turns with scroll, markers from
+  `data-compass`. The checkout button reads "Loading — please wait." while Stripe opens. The giant
+  footer wordmark says "Nothing interesting happens." on click. 404 says "You can't reach that."
   `examine` and `topics` live per product in `products.ts`; write new ones in the same dry voice.
 - Copy voice: dry outfitter's catalogue. "Ales, beds, poor company." Errors explain and direct, never
   apologise. Buttons say what happens ("Pay with card", "Add to cart").
@@ -121,8 +141,8 @@ Do not suggest moving to Shopify. Do not add a database unless a feature genuine
   store for Backwhen orders. Mockup garments: AS Colour 5101 hoodie (#484), AS Colour 5082 oversized
   faded tee (#713); no 5080 heavy tee in Printful's catalogue.
 - Branded order/shipping emails (Resend) — Stripe's receipt and Printful's tracking email cover it for launch.
-- Size guide table on the product page (measurements from the Printful/AS Colour spec).
-- Plausible or Fathom analytics; Meta pixel for ads (owner's marketing runs on Instagram).
+- Meta Conversions API (server-side Purchase from the Stripe webhook) once the pixel is live — needs
+  a CAPI access token; improves attribution when iOS blocks the browser pixel.
 - Australian-only collection (Round the Twist, The Castle, Summer Bay) and Redwall as later collections —
   same `Collection` shape.
 - Shipping rates calibrated to Printful's actual charges after the first month.

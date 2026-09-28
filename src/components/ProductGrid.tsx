@@ -1,12 +1,14 @@
 import ProductCard from "./ProductCard";
-import type { Product } from "@/lib/products";
+import type { GarmentType, Product } from "@/lib/products";
 
-export default function ProductGrid({ products, priorityCount = 0 }: { products: Product[]; priorityCount?: number }) {
+// Shows one garment for every design: `garment`, or whatever a surrounding
+// ShopFilter picks when `garment` is null.
+export default function ProductGrid({ products, priorityCount = 0, garment = "hoodie" }: { products: Product[]; priorityCount?: number; garment?: GarmentType | null }) {
   return (
-    <div className="grid grid-cols-1 gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="shop-grid" data-garment={garment ?? undefined}>
       {products.map((p, i) => (
-        <div key={p.slug} data-reveal="curtain" style={{ ["--d" as string]: `${(i % 3) * 110}ms` }}>
-          <ProductCard product={p} priority={i < priorityCount} index={i} />
+        <div key={p.slug} className="shop-cell" data-collection={p.collection} data-reveal style={{ ["--d" as string]: `${(i % 4) * 70}ms` }}>
+          <ProductCard product={p} priority={i < priorityCount} />
         </div>
       ))}
     </div>

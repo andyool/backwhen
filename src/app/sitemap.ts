@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const base = siteUrl();
   return [
     { url: base, priority: 1 },
+    { url: `${base}/shop`, priority: 0.9 },
     ...collections.map((c) => ({ url: `${base}/collections/${c.slug}`, priority: 0.8 })),
     ...products.map((p) => ({ url: `${base}/products/${p.slug}`, priority: 0.7 })),
     { url: `${base}/about` },

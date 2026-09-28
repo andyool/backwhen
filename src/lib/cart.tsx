@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { resolveSku, type ResolvedSku } from "./products";
 
 export type CartItem = { sku: string; qty: number };
@@ -59,12 +59,20 @@ type CartContextValue = {
   setQty: (sku: string, qty: number) => void;
   remove: (sku: string) => void;
   clear: () => void;
+  /** The slide-over cart */
+  drawerOpen: boolean;
+  openDrawer: () => void;
+  closeDrawer: () => void;
+  /** SKU most recently added, for the drawer's "complete the set" suggestion */
+  lastAdded: string | null;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, { items: [], hydrated: false });
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [lastAdded, setLastAdded] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -103,11 +111,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const already = items.find((i) => i.sku === sku)?.qty ?? 0;
     if (total + qty > MAX_ITEMS || already + qty > MAX_QTY) return false;
     dispatch({ type: "add", sku, qty });
+    setLastAdded(sku);
     return true;
   }, []);
   const setQty = useCallback((sku: string, qty: number) => dispatch({ type: "set", sku, qty }), []);
   const remove = useCallback((sku: string) => dispatch({ type: "remove", sku }), []);
   const clear = useCallback(() => dispatch({ type: "clear" }), []);
+  const openDrawer = useCallback(() => setDrawerOpen(true), []);
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
   const value: CartContextValue = {
     items: state.items,
@@ -119,6 +130,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setQty,
     remove,
     clear,
+    drawerOpen,
+    openDrawer,
+    closeDrawer,
+    lastAdded,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

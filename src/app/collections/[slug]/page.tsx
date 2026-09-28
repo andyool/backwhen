@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductGrid from "@/components/ProductGrid";
-import SplitText from "@/components/fx/SplitText";
+import ShopFilter from "@/components/ShopFilter";
 import PlaceRequest from "@/components/PlaceRequest";
 import { collections, getCollection, productsIn } from "@/lib/products";
+import { money } from "@/lib/format";
 
 type Params = Promise<{ slug: string }>;
 
@@ -22,29 +23,29 @@ export default async function CollectionPage({ params }: { params: Params }) {
   const collection = getCollection(slug);
   if (!collection) notFound();
   const items = productsIn(slug);
-  const index = collections.findIndex((c) => c.slug === slug) + 1;
+  const hoodie = items[0].garments.find((g) => g.type === "hoodie")!.priceCents;
+  const tee = items[0].garments.find((g) => g.type === "tee")!.priceCents;
 
   return (
     <div className="mx-auto w-full max-w-page px-5 sm:px-8">
-      <header className="grid gap-6 pb-14 pt-6 md:grid-cols-[1fr_2fr] md:items-end">
+      <header className="grid gap-4 pb-8 pt-4 sm:pb-10 sm:pt-8 md:grid-cols-[1fr_1fr] md:items-end md:gap-10">
         <div>
-          <p className="display-soft text-[64px] text-faded/50 sm:text-[96px]" data-reveal="fade">
-            {String(index).padStart(2, "0")}
-          </p>
-          <p className="text-faded" data-reveal>
-            {collection.world}
-          </p>
-          <SplitText as="h1" text={collection.name} className="display mt-1 block text-[52px] sm:text-[72px]" delay={100} />
+          <p className="small hero-in text-faded">{collection.world}</p>
+          <h1 className="display hero-in mt-1 text-[48px] sm:text-[80px]" style={{ ["--d" as string]: "60ms" }}>
+            {collection.name}
+          </h1>
         </div>
-        <div className="md:justify-self-end" data-reveal style={{ ["--d" as string]: "300ms" }}>
-          <p className="max-w-[52ch] text-[18px] text-faded md:text-[20px]">{collection.blurb}</p>
-          <div className="mt-8">
-            <PlaceRequest collection={collection.name} />
-          </div>
-        </div>
+        <p className="hero-in max-w-[52ch] text-faded md:justify-self-end md:text-[18px]" style={{ ["--d" as string]: "120ms" }}>
+          {collection.blurb}
+        </p>
       </header>
       <div data-compass={slug}>
-        <ProductGrid products={items} priorityCount={3} />
+        <ShopFilter filters={[]} prices={{ hoodie: money(hoodie), tee: money(tee) }}>
+          <ProductGrid products={items} priorityCount={4} garment={null} />
+        </ShopFilter>
+      </div>
+      <div className="mt-24 border-t border-seam pt-10" data-reveal>
+        <PlaceRequest collection={collection.name} />
       </div>
     </div>
   );

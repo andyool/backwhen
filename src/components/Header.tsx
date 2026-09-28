@@ -5,15 +5,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/cart";
 import { collections } from "@/lib/products";
+import { zones } from "@/lib/shipping";
+import { money } from "@/lib/format";
 import { site } from "@/lib/site";
 
+const freeAu = zones.find((z) => z.id === "au")?.freeOverCents;
+
 export default function Header() {
-  const { count, hydrated } = useCart();
+  const { count, hydrated, openDrawer } = useCart();
   const path = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [bump, setBump] = useState(false);
   const prev = useRef(count);
-
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -42,14 +45,19 @@ export default function Header() {
   }, [count, hydrated]);
 
   const nav = [
+    { href: "/shop", label: "Shop all" },
     ...collections.map((c) => ({ href: `/collections/${c.slug}`, label: c.name })),
     { href: "/about", label: "About" },
   ];
 
   return (
-    <header ref={ref} className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
-      <div className="mx-auto w-full max-w-page px-5 sm:px-8">
-        <div className="site-header-row flex items-center justify-between gap-6 py-6">
+    <>
+      <p className="announce">
+        <span>Printed to order, shipped in about a week</span>
+        {freeAu && <span className="announce-extra">Free shipping in Australia over {money(freeAu)}</span>}
+      </p>
+      <header ref={ref} className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
+        <div className="mx-auto flex w-full max-w-page items-center justify-between gap-6 px-5 py-3.5 sm:px-8 sm:py-4">
           <Link href="/" className="wordmark text-[26px] text-bone" aria-label={`${site.name} home`}>
             {Array.from(site.wordmark).map((ch, i) => (
               <span key={i} style={{ animationDelay: `${i * 35}ms` }} aria-hidden>
@@ -57,34 +65,24 @@ export default function Header() {
               </span>
             ))}
           </Link>
-          <nav className="hidden items-center gap-8 md:flex" aria-label="Main">
+          <nav className="hidden items-center gap-8 lg:flex" aria-label="Main">
             {nav.map((n) => (
-              <Link
-                key={n.href}
-                href={n.href}
-                className={`sweep ${path.startsWith(n.href) ? "is-active text-bone" : "text-faded hover:text-bone"}`}
-              >
+              <Link key={n.href} href={n.href} className={`sweep ${path.startsWith(n.href) ? "is-active text-bone" : "text-faded hover:text-bone"}`}>
                 {n.label}
               </Link>
             ))}
           </nav>
-          <Link href="/cart" className="sweep flex items-center gap-2 text-bone" aria-label={`Cart, ${count} items`}>
-            <span>Cart</span>
-            <span
-              className={`small inline-flex min-w-[22px] justify-center rounded-[2px] bg-flannel px-1.5 py-0.5 tabular-nums ${bump ? "badge-bump" : ""}`}
-            >
-              {hydrated ? count : "–"}
-            </span>
-          </Link>
-        </div>
-        <nav className="-mt-2 flex gap-5 pb-4 md:hidden" aria-label="Main">
-          {nav.map((n) => (
-            <Link key={n.href} href={n.href} className={path.startsWith(n.href) ? "text-bone" : "text-faded"}>
-              {n.label}
+          <div className="flex items-center gap-5">
+            <Link href="/shop" className={`sweep lg:hidden ${path.startsWith("/shop") ? "text-bone" : "text-faded"}`}>
+              Shop
             </Link>
-          ))}
-        </nav>
-      </div>
-    </header>
+            <button type="button" onClick={openDrawer} className="flex items-center gap-2 text-bone" aria-label={`Cart, ${count} items`}>
+              <span className="sweep">Cart</span>
+              <span className={`cart-count small tabular-nums ${count > 0 ? "has-items" : ""} ${bump ? "badge-bump" : ""}`}>{hydrated ? count : 0}</span>
+            </button>
+          </div>
+        </div>
+      </header>
+    </>
   );
 }

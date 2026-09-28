@@ -4,8 +4,9 @@ import { stripe } from "@/lib/stripe";
 import { resolveSku, garmentLabel } from "@/lib/products";
 import { shippingFor, zoneForCountry } from "@/lib/shipping";
 import { site, siteUrl } from "@/lib/site";
+import { cleanAttribution } from "@/lib/attribution";
 
-type Body = { items?: { sku: string; qty: number }[]; country?: string };
+type Body = { items?: { sku: string; qty: number }[]; country?: string; attribution?: unknown };
 
 export async function POST(req: Request) {
   let body: Body;
@@ -83,7 +84,8 @@ export async function POST(req: Request) {
       billing_address_collection: "auto",
       success_url: `${siteUrl()}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl()}/cart`,
-      metadata: { site: site.shortName, country },
+      // utm_* / click ids from the ad that brought them, so sales trace back to campaigns in Stripe.
+      metadata: { site: site.shortName, country, ...cleanAttribution(body.attribution) },
       // Printful's order is created by the webhook, so the session id is our order reference.
     });
   } catch (e) {

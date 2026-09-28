@@ -66,3 +66,31 @@ export function shippingFor(
   const free = zone.freeOverCents !== undefined && subtotalCents >= zone.freeOverCents;
   return { zone, rateCents: free ? 0 : zone.rateCents };
 }
+
+const COUNTRY_KEY = "backwhen-country";
+
+/** The shopper's country: what they picked last time, else a guess from the
+ *  browser's time zone and language, else Australia. */
+export function initialCountry(): string {
+  if (typeof window === "undefined") return "AU";
+  try {
+    const saved = window.localStorage.getItem(COUNTRY_KEY);
+    if (saved && allowedCountries.includes(saved)) return saved;
+  } catch {}
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone ?? "";
+    if (tz.startsWith("Australia/")) return "AU";
+    if (tz === "Pacific/Auckland" || tz === "Pacific/Chatham") return "NZ";
+    const region = (navigator.language.split("-")[1] ?? "").toUpperCase();
+    if (region && allowedCountries.includes(region)) return region;
+    if (tz.startsWith("America/")) return "US";
+    if (tz === "Europe/London") return "GB";
+  } catch {}
+  return "AU";
+}
+
+export function saveCountry(country: string) {
+  try {
+    window.localStorage.setItem(COUNTRY_KEY, country);
+  } catch {}
+}
