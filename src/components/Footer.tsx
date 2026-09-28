@@ -19,7 +19,7 @@ export default function Footer() {
             </Link>
           ))}
           <Link href="/about" className="sweep text-faded hover:text-bone">
-            Why no logos
+            About
           </Link>
         </div>
         <div className="flex flex-col items-start gap-2" data-reveal style={{ ["--d" as string]: "160ms" }}>

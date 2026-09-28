@@ -4,7 +4,7 @@ import DrawSign from "@/components/fx/DrawSign";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Why no logos",
+  title: "About",
   description: "Most fan merch explains itself. This doesn't. The people who were there don't need it explained.",
 };
 

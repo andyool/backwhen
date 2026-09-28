@@ -47,7 +47,7 @@ export default function Header() {
   const nav = [
     { href: "/shop", label: "Shop all" },
     ...collections.map((c) => ({ href: `/collections/${c.slug}`, label: c.name })),
-    { href: "/about", label: "Why no logos" },
+    { href: "/about", label: "About" },
   ];
 
   return (
