@@ -44,9 +44,11 @@ export type Product = {
   /** The town or region line */
   place: string;
   collection: Collection["slug"];
-  /** Short line used on cards */
+  /** Short insider line: what the design means to someone who was there */
   line: string;
-  /** Longer copy for the product page */
+  /** What everyone else assumes it is. Said with a straight face. */
+  cover: string;
+  /** Longer copy for the product page, written to someone who was there */
   story: string;
   /** The small-type lines printed beneath the artwork */
   printLines: string[];
@@ -59,18 +61,18 @@ export type Product = {
 
 export const collections: Collection[] = [
   {
-    slug: "runescape",
-    name: "RuneScape",
-    world: "Gielinor",
+    slug: "gielinor",
+    name: "Gielinor",
+    world: "Est. 2001",
     blurb:
-      "Six businesses from the old world. The general store you sold your first bronze dagger to, the inn you got kicked out of, the fishing wharf you spent a whole summer on.",
+      "Six places from the old world. The shop you sold your first dagger to, the inn you got thrown out of, the wharf you lost a summer on. You already know which one is yours.",
   },
   {
-    slug: "elder-scrolls",
-    name: "The Elder Scrolls",
-    world: "Morrowind & Cyrodiil",
+    slug: "tamriel",
+    name: "Tamriel",
+    world: "Est. 2002",
     blurb:
-      "Six stops between the Bitter Coast and the Jerall Mountains. Census offices, cornerclubs, ferries and a vineyard that never made a bad year.",
+      "Six stops between the Bitter Coast and the Jerall Mountains. A census office, a cornerclub, a ferry and a vineyard that never had a bad year. If the names mean something, nothing else needs saying.",
   },
 ];
 
@@ -321,21 +323,22 @@ function set(slug: string, colour: ColourSlug, first: GarmentType = "hoodie"): G
 }
 
 export const products: Product[] = [
-  // ---------------------------------------------------------------- RuneScape
+  // ---------------------------------------------------------------- Gielinor
   {
     slug: "lumbridge-general-store",
     name: "Lumbridge General Store",
     place: "Across from the castle, Lumbridge",
-    collection: "runescape",
-    line: "Purveyors of fine goods since 2001.",
+    collection: "gielinor",
+    line: "You know exactly what you sold here.",
+    cover: "A general store from some farming town. Nice thatch.",
     story:
-      "Every journey started here, usually with a bronze dagger and 25 coins. The shop hasn't changed: thatched roof, barrels by the door, a cow watching from the field, the spire behind. Printed in bone ink on a heavyweight hoodie, with the store name on the chest.",
+      "Everyone started here. A bronze dagger, a handful of coins, and a shopkeeper who would buy anything for less than it was worth. Thatched roof, barrels by the door, a cow watching from the field, the spire behind. You never paid full price here, and you never got it either.",
     printLines: ["Purveyors of fine goods · Est. 2001", "Across from the castle, Lumbridge"],
     examine: "A shop. Sells everything you don't need and nothing you do.",
     topics: {
-      "bronze dagger": "Sold for three coins. Bought back for ten. This is the whole economy.",
+      "bronze dagger": "Sold for three coins. Bought back for ten. The whole economy, right there.",
       "a cow": "Watching. Always watching.",
-      "spire": "You could hear the bell from the swamp.",
+      "the spire": "You could hear the bell from the swamp.",
     },
     garments: set("lumbridge-general-store", "black"),
   },
@@ -343,15 +346,17 @@ export const products: Product[] = [
     slug: "blue-moon-inn",
     name: "The Blue Moon Inn",
     place: "South Varrock",
-    collection: "runescape",
-    line: "Ales, beds, poor company. Open late.",
+    collection: "gielinor",
+    line: "Ales, beds, poor company. You remember the company.",
+    cover: "An old coaching inn. Probably does a good pie.",
     story:
-      "The inn on the south side of Varrock where nobody asked why you were carrying a full inventory of cabbages. Lantern light in the windows, the city wall behind, a crescent moon on the sign. Washed charcoal fleece, bone ink.",
+      "South side of the city, inside the wall. Nobody asked why you were carrying a full inventory of cabbages, and you didn't offer. Lantern in the window, a crescent moon on the sign, the same three regulars who never seemed to leave.",
     printLines: ["Ales · Beds · Poor company", "South Varrock · Open late"],
     examine: "Ales, beds, poor company. In that order.",
     topics: {
       "cabbages": "Nobody asked. Nobody ever asks.",
       "crescent moon": "Painted, not real. The real one is behind the wall.",
+      "three regulars": "Still there. Almost certainly still there.",
     },
     garments: set("blue-moon-inn", "charcoal"),
   },
@@ -359,16 +364,17 @@ export const products: Product[] = [
     slug: "karamja-fishing-co",
     name: "Karamja Fishing Co.",
     place: "Musa Point wharf",
-    collection: "runescape",
-    line: "Lobster, tuna, swordfish. Return ferry 30gp.",
+    collection: "gielinor",
+    line: "Thirty coins each way. Worth it.",
+    cover: "A tropical fishing charter. Someone's holiday souvenir.",
     story:
-      "A summer of lobsters and a volcano smoking in the background. The badge is printed in rust and navy on a cream tee, the kind you'd have bought from the wharf itself if the wharf sold tees. Return ferry not included.",
+      "A whole summer on the wharf: cage, haul, cook, drop, repeat, with the volcano smoking behind you the entire time. The ferry fare never came down and you paid it every single trip. Rust and navy on cream, like something you would actually have bought at the wharf.",
     printLines: ["Lobster · Tuna · Swordfish", "Musa Point wharf · Since 2001", "Return ferry 30gp"],
     examine: "Smells of lobster and volcano.",
     topics: {
-      "lobsters": "Caged, hauled, cooked, dropped. Repeat until it stops feeling like a summer.",
-      "volcano": "Still smoking. Don't go in without something to light.",
-      "Return ferry": "Thirty coins. Each way. No, the price doesn't come down.",
+      "cage, haul, cook, drop": "Until it stopped feeling like a summer and started feeling like a job.",
+      "the volcano": "Still smoking. Don't go in without something to light.",
+      "ferry fare": "Thirty coins. Each way. No, it doesn't come down.",
     },
     garments: set("karamja-fishing-co", "cream", "tee"),
   },
@@ -376,16 +382,17 @@ export const products: Product[] = [
     slug: "draynor-manor",
     name: "Draynor Manor",
     place: "Draynor Village",
-    collection: "runescape",
+    collection: "gielinor",
     line: "Guided tours. Guests rarely leave.",
+    cover: "A haunted-house attraction. Very gothic.",
     story:
-      "Dead trees, a wrought-iron gate, crows on the roofline and a full moon behind cloud. The gothic one in the range, for the people who didn't run when the door shut behind them. Black hoodie, bone ink.",
+      "Dead trees, an iron gate, crows along the roofline and a moon that never changes phase. You went in because someone said there was something upstairs. The door shut behind you. It always does. The one in the range for people who didn't run.",
     printLines: ["Guided tours · Guests rarely leave", "Draynor Village · Since 2001"],
     examine: "The door locked behind you. It always does.",
     topics: {
-      "wrought-iron gate": "Opens inward. Has never once opened outward.",
+      "iron gate": "Opens inward. Has never once opened outward.",
       "crows": "They know something. They aren't saying.",
-      "full moon": "Same phase every night. Nobody has mentioned it.",
+      "something upstairs": "There was. You don't talk about it.",
     },
     garments: set("draynor-manor", "black"),
   },
@@ -393,15 +400,16 @@ export const products: Product[] = [
     slug: "al-kharid-scimitar-works",
     name: "Al Kharid Scimitar Works",
     place: "East of the toll gate",
-    collection: "runescape",
-    line: "Blades forged daily.",
+    collection: "gielinor",
+    line: "Pay the toll. Mind the heat.",
+    cover: "A desert forge. Moroccan metalworks, maybe?",
     story:
-      "Ten gold at the gate, then a sandstone forge with the scimitars hanging on the wall and palm trees outside. The tee in the range you can wear to work. Black, bone ink, forge glow picked out in the line work.",
+      "Ten gold at the gate, every time, no exceptions. Then sandstone, palm trees, and scimitars hanging on the forge wall like they had always been there. The tee you can wear to work: to everyone else it's a nice desert-town print.",
     printLines: ["Blades forged daily", "East of the toll gate · Al Kharid"],
     examine: "Ten coins at the gate. Blades extra.",
     topics: {
-      "Ten gold": "The toll. The gatekeeper does not negotiate.",
-      "scimitars": "Curved, fast, and yours for a price.",
+      "Ten gold": "The gatekeeper does not negotiate. You tried.",
+      "scimitars": "Curved, fast, and never quite affordable.",
       "palm trees": "The only shade for miles.",
     },
     garments: set("al-kharid-scimitar-works", "black", "tee"),
@@ -410,34 +418,36 @@ export const products: Product[] = [
     slug: "barbarian-village-fishing-and-firemaking",
     name: "Barbarian Village",
     place: "Fishing & Firemaking Co., on the River Lum",
-    collection: "runescape",
-    line: "Trout, salmon, willow logs.",
+    collection: "gielinor",
+    line: "Two levels. One whole weekend.",
+    cover: "A riverside fishing camp. Very outdoorsy.",
     story:
-      "Fur-roofed huts by a fast river, a rod leaning on a rock, a fire burning down to willow ash, the mine entrance in the hill behind. The place you spent an entire weekend for two levels. Washed charcoal, bone ink.",
+      "Fur-roofed huts by a fast river, a rod against a rock, a fire burning down to willow ash, the mine in the hill behind. You spent an entire weekend here for two levels, and you would do it again. You would absolutely do it again.",
     printLines: ["Trout · Salmon · Willow logs", "On the River Lum · Est. 2001"],
     examine: "Trout, salmon, and a fire that never quite catches.",
     topics: {
-      "willow ash": "Ninety logs to the next level, give or take a fire that won't light.",
-      "mine entrance": "Coal, if you're patient. Company, if you're not.",
       "fast river": "The salmon jump. You miss. The salmon jump.",
+      "willow ash": "Ninety logs to the next level, give or take a fire that won't light.",
+      "the mine": "Coal, if you're patient. Company, if you're not.",
     },
     garments: set("barbarian-village-fishing-and-firemaking", "charcoal"),
   },
 
-  // ------------------------------------------------------------ Elder Scrolls
+  // ---------------------------------------------------------------- Tamriel
   {
     slug: "census-and-excise-office",
     name: "Census & Excise Office",
     place: "Seyda Neen, Bitter Coast",
-    collection: "elder-scrolls",
-    line: "All new arrivals report here.",
+    collection: "tamriel",
+    line: "All new arrivals report here. You did.",
+    cover: "A colonial customs house on a foggy coast.",
     story:
-      "Off the boat, into the fog: stilt houses, the lighthouse, giant mushrooms in the marsh and a clerk who wants to know your name and your sign. The first stop for everyone. Black hoodie, bone ink.",
+      "Off the boat and into the fog: stilt houses, the lighthouse, giant mushrooms in the marsh, and a clerk who wanted your name and your sign before you had found your feet. Everybody's first stop. Nobody has forgotten it.",
     printLines: ["All new arrivals report here", "Bitter Coast · Est. 2002"],
     examine: "All new arrivals report here. Name and sign, please.",
     topics: {
-      "the fog": "It lifts by noon, mostly.",
-      "lighthouse": "Somebody keeps it lit. Nobody says who.",
+      "the fog": "It lifts by noon. Mostly.",
+      "the lighthouse": "Somebody keeps it lit. Nobody says who.",
       "your sign": "Choose carefully. You'll be stuck with it.",
     },
     garments: set("census-and-excise-office", "black"),
@@ -446,16 +456,17 @@ export const products: Product[] = [
     slug: "south-wall-cornerclub",
     name: "The South Wall Cornerclub",
     place: "Labour Town, Balmora",
-    collection: "elder-scrolls",
+    collection: "tamriel",
     line: "Rooms, sujamma, discretion.",
+    cover: "A neighbourhood tavern in an adobe town.",
     story:
-      "Rounded adobe houses on the Odai, stone footbridges, ash hills behind, and a corner tavern where certain arrangements were made. Washed charcoal fleece, bone ink, and a name that will only mean something to the right people.",
+      "Rounded clay houses along the river, stone footbridges, ash hills behind, and a corner tavern where certain arrangements were made. If you know why you would go there, you already know who to ask for. If you don't, it's a very nice tavern.",
     printLines: ["Rooms · Sujamma · Discretion", "Labour Town, Balmora"],
     examine: "Rooms, sujamma, discretion. Ask for no one.",
     topics: {
-      "Odai": "The river. Brown, slow, and the reason the town exists.",
+      "the river": "Brown, slow, and the only reason the town is there.",
       "certain arrangements": "You'd have to ask inside. Bring coin and a reason.",
-      "ash hills": "The wind comes off them some afternoons. Keep your mouth shut.",
+      "ash hills": "Some afternoons the wind comes off them. Keep your mouth shut.",
     },
     garments: set("south-wall-cornerclub", "charcoal"),
   },
@@ -463,16 +474,17 @@ export const products: Product[] = [
     slug: "vivec-canton-ferry",
     name: "Vivec Canton Ferry",
     place: "Foreign Quarter dock",
-    collection: "elder-scrolls",
-    line: "Gondola service, all cantons.",
+    collection: "tamriel",
+    line: "All cantons. Timetable optional.",
+    cover: "A Venetian water taxi, more or less.",
     story:
-      "The cantons rising out of the lake, bridges between them, a single gondola in the foreground and the mountain behind. Ferry timetables not guaranteed. Black tee, bone ink.",
+      "The cantons rising out of the water, bridges strung between them, one gondola in the foreground and the mountain behind. You got lost here for a week and called it sightseeing.",
     printLines: ["Gondola service · All cantons", "Foreign Quarter dock · Since 2002"],
     examine: "Gondola service to all cantons. Timetable optional.",
     topics: {
-      "cantons": "Nine of them, each a city. Bring a map or a boatman.",
+      "cantons": "Each one a city. Bring a map or a boatman.",
       "gondola": "Faster than walking. Slower than you'd like.",
-      "the mountain": "Best seen from a distance. Preferably a moving one.",
+      "lost here for a week": "Everyone does. The map doesn't help.",
     },
     garments: set("vivec-canton-ferry", "black", "tee"),
   },
@@ -480,16 +492,17 @@ export const products: Product[] = [
     slug: "newlands-lodge",
     name: "The Newlands Lodge",
     place: "Cheydinhal",
-    collection: "elder-scrolls",
-    line: "Fine rooms, river views.",
+    collection: "tamriel",
+    line: "Fine rooms, river views. The nicest town going.",
+    cover: "A riverside lodge in some alpine village.",
     story:
-      "Willows trailing into the river, a stone bridge, steep timber roofs and mountains behind. The nicest town in the province and the nicest lodge in it. Washed charcoal, bone ink.",
+      "Willows trailing into the river, a covered stone bridge, steep timber roofs and mountains behind. The nicest town in the province, and you knew it the moment you walked in. You would have bought a house here if they had let you.",
     printLines: ["Fine rooms · River views", "Cheydinhal · Est. 2006"],
     examine: "Fine rooms, river views. Mind the willows.",
     topics: {
-      "Willows": "They trail into the river and nobody trims them. That's the point.",
-      "stone bridge": "Covered, so you can cross in the rain without noticing the rain.",
-      "nicest town": "Ask the locals. They'll agree, quietly.",
+      "Willows": "Nobody trims them. That's the point.",
+      "stone bridge": "Covered, so you cross in the rain without noticing the rain.",
+      "bought a house here": "They did let you, eventually. It needed work.",
     },
     garments: set("newlands-lodge", "charcoal"),
   },
@@ -497,16 +510,17 @@ export const products: Product[] = [
     slug: "surilie-brothers-vineyard",
     name: "Surilie Brothers",
     place: "Vineyard & Winery, West Weald",
-    collection: "elder-scrolls",
-    line: "Vintage 2006.",
+    collection: "tamriel",
+    line: "Vintage 2006. Never a bad year.",
+    cover: "A boutique winery label. Very tasteful.",
     story:
-      "Vines on the hills outside the walls, the castle above, barrels and a bunch of grapes in the foreground, set inside a wine-label oval. Printed in burgundy and olive on a cream tee. Pairs with anything.",
+      "Vines on the hills outside the walls, the castle above, barrels and a bunch of grapes up front, all inside a wine-label oval. Two brothers, one hill, no bad years. In burgundy and olive on cream, it passes for a cellar-door souvenir anywhere.",
     printLines: ["West Weald · Skingrad", "Vintage 2006"],
     examine: "Vintage 2006. Never a bad year.",
     topics: {
-      "Vines": "Two brothers, one hill, no bad years. Ask which brother and you'll get a look.",
+      "Two brothers": "Ask which one makes it better and you'll get a look.",
       "the castle": "The count doesn't take visitors. The vineyard does.",
-      "wine-label oval": "Every bottle in the county has one. This one is better drawn.",
+      "wine-label oval": "Every bottle in the county has one. This one's better drawn.",
     },
     garments: set("surilie-brothers-vineyard", "cream", "tee"),
   },
@@ -514,16 +528,17 @@ export const products: Product[] = [
     slug: "jerall-view-inn",
     name: "The Jerall View Inn",
     place: "Bruma, Jerall Mountains",
-    collection: "elder-scrolls",
-    line: "Hot meals, warm beds, mead.",
+    collection: "tamriel",
+    line: "Hot meals, warm beds, mead. Wear it in July.",
+    cover: "A ski lodge. Very cosy.",
     story:
-      "Snow on the pines, smoke from the chimneys, a lantern-lit porch and the peaks behind under a night sky. The one to wear in July. Black hoodie, bone ink.",
+      "Snow on the pines, smoke from the chimneys, a lantern-lit porch and the peaks behind under a night sky. The last warm room before the pass. You stayed longer than you meant to.",
     printLines: ["Hot meals · Warm beds · Mead", "Bruma, Jerall Mountains"],
     examine: "Hot meals, warm beds, mead. In that order.",
     topics: {
       "Snow on the pines": "It doesn't melt. Not in July, not ever.",
-      "the peaks": "The pass is open. The pass is always, technically, open.",
-      "July": "Wear it anyway. Nobody here will judge.",
+      "the pass": "Open. Technically always open.",
+      "longer than you meant to": "Everyone does. The mead helps.",
     },
     garments: set("jerall-view-inn", "black"),
   },

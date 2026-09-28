@@ -19,7 +19,15 @@ const nextConfig: NextConfig = {
         basePath: basePath || undefined,
         assetPrefix: basePath || undefined,
       }
-    : {}),
+    : {
+        // Collections were renamed to their in-world names on 2026-09-28; keep old links (and ads) working.
+        async redirects() {
+          return [
+            { source: "/collections/runescape", destination: "/collections/gielinor", permanent: true },
+            { source: "/collections/elder-scrolls", destination: "/collections/tamriel", permanent: true },
+          ];
+        },
+      }),
 };
 
 export default nextConfig;

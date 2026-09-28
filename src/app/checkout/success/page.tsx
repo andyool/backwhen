@@ -33,14 +33,14 @@ export default async function SuccessPage({ searchParams }: { searchParams: Sear
     <div className="mx-auto w-full max-w-page px-5 pt-6 sm:px-8">
       {paid && <ClearCart reference={reference} valueCents={total} />}
       <div className="max-w-[52ch]">
-        <h1 className="display hero-in text-[44px] sm:text-[60px]">{paid ? "On its way to the press." : "Thanks."}</h1>
+        <h1 className="display hero-in text-[44px] sm:text-[60px]">{paid ? "It’s going on the press." : "Thanks."}</h1>
         {paid ? (
           <>
             <p className="mt-6 text-[18px] text-faded">
               Order {reference} is in. {email ? `A receipt is on its way to ${email}.` : ""} {total !== null ? `Total charged ${money(total)}.` : ""}
             </p>
             <p className="mt-4 text-faded">
-              Printing takes 2–5 business days, then it ships from the nearest print house and you&rsquo;ll get a tracking email. If anything looks wrong, reply to the receipt and it&rsquo;ll be sorted.
+              Printing takes 2–5 business days, then it ships from the print house nearest you and a tracking email follows. When someone asks where it&rsquo;s from, you don&rsquo;t have to tell them. If anything looks wrong, reply to the receipt and it gets sorted.
             </p>
           </>
         ) : (

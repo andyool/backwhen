@@ -13,7 +13,7 @@ export default function ShippingPage() {
       <div className="prose-page hero-in mt-8" style={{ ["--d" as string]: "100ms" }}>
         <h2>Shipping</h2>
         <p>
-          Everything is printed after you order it, which takes 2–5 business days. Then it ships from the print house nearest you and you get a tracking email.
+          Nothing is made until you order it. Printing takes 2–5 business days, then it ships from the print house nearest you and a tracking email follows.
         </p>
         <ul className="mt-4 flex flex-col gap-2">
           {zones.map((z) => (

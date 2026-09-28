@@ -10,9 +10,9 @@ export default function NotFound() {
         <Fog />
       </div>
       <div className="mx-auto w-full max-w-page px-5 sm:px-8">
-        <SplitText as="h1" text="This place doesn’t exist." className="display block text-[44px] sm:text-[72px]" />
+        <SplitText as="h1" text="You can’t reach that." className="display block text-[44px] sm:text-[72px]" />
         <p className="mt-6 max-w-[46ch] text-[18px] text-faded" data-reveal style={{ ["--d" as string]: "300ms" }}>
-          You can&rsquo;t reach that. The page you were after has moved or never was.
+          This page moved, or never existed. Fitting, really. The shop is still where you left it.
         </p>
         <div className="mt-10" data-reveal style={{ ["--d" as string]: "450ms" }}>
           <Magnetic>

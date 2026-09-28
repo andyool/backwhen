@@ -233,8 +233,11 @@ export default function ProductView({
           <h1 className="display hero-in mt-2 text-[40px] sm:text-[52px]" style={{ ["--d" as string]: "50ms" }}>
             {product.name}
           </h1>
-          <p className="hero-in mt-2 text-[18px] text-faded" style={{ ["--d" as string]: "90ms" }}>
+          <p className="hero-in mt-2 text-[19px]" style={{ ["--d" as string]: "90ms" }}>
             {product.line}
+          </p>
+          <p className="small hero-in mt-3 text-faded" style={{ ["--d" as string]: "110ms" }}>
+            <span className="text-bone">They&rsquo;ll think:</span> <span className="italic">{product.cover}</span> <span className="text-bone">You&rsquo;ll know.</span>
           </p>
 
           <div className="hero-in mt-7 flex flex-col gap-6" style={{ ["--d" as string]: "140ms" }}>
@@ -290,7 +293,7 @@ export default function ProductView({
                 {size ? `Add to cart · ${money(garment.priceCents)}` : "Add to cart"}
               </button>
             ) : (
-              <p className="small rounded-[2px] bg-flannel p-4 text-faded">This one isn&rsquo;t on the press yet. Follow along on Instagram for the release.</p>
+              <p className="small rounded-[2px] bg-flannel p-4 text-faded">Not on the press yet. Watch Instagram; you&rsquo;ll know it when it lands.</p>
             )}
 
             <ul className="small flex flex-col gap-1.5 text-faded">
@@ -307,7 +310,7 @@ export default function ProductView({
 
           <div className="mt-10 border-t border-seam">
             <details className="acc" open>
-              <summary>The place</summary>
+              <summary>What you&rsquo;ll remember</summary>
               <Dialogue text={product.story} topics={product.topics} className="acc-body text-faded" />
             </details>
             <details className="acc" id="size-guide">
@@ -344,7 +347,7 @@ export default function ProductView({
                   {garment.type === "hoodie"
                     ? "Heavyweight brushed fleece, dropped shoulder, double-lined hood, kangaroo pocket."
                     : "Heavy 100% cotton with a faded wash, boxy oversized fit, ribbed collar."}{" "}
-                  Large print across the back, the crest small on the left chest.
+                  The big print across the back, the crest small on the left chest. What&rsquo;s printed, word for word:
                 </p>
                 <ul className="mt-3">
                   {product.printLines.map((l) => (
@@ -356,9 +359,9 @@ export default function ProductView({
             <details className="acc">
               <summary>Shipping &amp; returns</summary>
               <div className="acc-body text-faded">
-                <p>Printed to order in 2–5 business days, then shipped from the print house nearest you with tracking — usually Brisbane for Australia, and local partners for the US, UK and Europe.</p>
+                <p>Printed for you in 2–5 business days, then shipped with tracking from the print house nearest you — Brisbane for most of Australia, local partners for the US, UK and Europe.</p>
                 <p className="mt-3">
-                  No change-of-mind returns, since it&rsquo;s made for you. Damaged, misprinted or wrong: replaced free. <Link href="/shipping" className="link">Full details</Link>.
+                  It&rsquo;s made for you, so no change-of-mind returns. Damaged, misprinted or wrong: we print another, free. <Link href="/shipping" className="link">The fine print</Link>.
                 </p>
               </div>
             </details>

@@ -63,10 +63,10 @@ export default function CartContents({ onNavigate }: { onNavigate?: () => void }
   if (lines.length === 0) {
     return (
       <div className="flex flex-1 flex-col items-start justify-center gap-4 p-6">
-        <p className="display text-[34px]">Nothing in your inventory.</p>
-        <p className="text-faded">Twelve places, two garments each. Pick one to start.</p>
+        <p className="display text-[34px]">Your inventory&rsquo;s empty.</p>
+        <p className="text-faded">Twelve places. You&rsquo;ll know yours when you see it.</p>
         <Link href="/shop" className="btn-primary mt-2" onClick={onNavigate}>
-          Browse all 12 places
+          Find your place
         </Link>
       </div>
     );

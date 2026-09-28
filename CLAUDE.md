@@ -94,8 +94,16 @@ Do not suggest moving to Shopify. Do not add a database unless a feature genuine
   `data-compass`. The checkout button reads "Loading — please wait." while Stripe opens. The giant
   footer wordmark says "Nothing interesting happens." on click. 404 says "You can't reach that."
   `examine` and `topics` live per product in `products.ts`; write new ones in the same dry voice.
-- Copy voice: dry outfitter's catalogue. "Ales, beds, poor company." Errors explain and direct, never
-  apologise. Buttons say what happens ("Pay with card", "Add to cart").
+- Copy approach (rewritten 2026-09-28 at the owner's request): everything is built on "if you know, you
+  know" (the site tagline). Talk to the person who was there, in the second person; never explain the
+  reference, never say "game", never name one. Outsiders are "everyone else" and the joke is that they
+  see a nice old lodge hoodie. Each product has `line` (what it means to you), `cover` (what everyone
+  else assumes it is — shown as "They'll think: … You'll know." and in the home page's "Two ways to read a
+  hoodie"), and `story` (a memory, not a product description). Collections are shown by their in-world
+  names (Gielinor, Tamriel; slugs `gielinor` / `tamriel`, old `/collections/runescape` and
+  `/collections/elder-scrolls` redirect in next.config.ts). Still a dry outfitter's voice: short
+  sentences, understated. Functional facts (price, shipping, sizing, returns) stay plain and exact.
+  Buttons say what happens ("Find your place", "Add to cart").
 - Mobile first: most traffic will come from Instagram ads on phones.
 
 ## Conventions

@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!product) return {};
   return {
     title: product.name,
-    description: `${product.line} ${product.story}`,
+    description: `${product.line} ${product.story}`.slice(0, 300),
     openGraph: { images: [asset(`/og/${product.slug}.jpg`)] },
   };
 }
@@ -42,7 +42,7 @@ export default async function ProductPage({ params }: { params: Params }) {
       {more.length > 0 && (
         <section className="mx-auto mt-24 w-full max-w-page px-5 sm:mt-32 sm:px-8">
           <h2 className="display mb-8 text-[30px] sm:text-[40px]" data-reveal>
-            Nearby, in {collection.world}
+            You might also know these
           </h2>
           <ProductGrid products={more} />
         </section>

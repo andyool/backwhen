@@ -28,6 +28,7 @@ const stage: StageItem[] = [...products]
   });
 
 const featured = products.find((p) => p.slug === "census-and-excise-office") ?? products[0];
+const readings = ["lumbridge-general-store", "census-and-excise-office", "blue-moon-inn"].flatMap((slug) => products.filter((p) => p.slug === slug));
 
 export default function HomePage() {
   const filters = [
@@ -48,24 +49,25 @@ export default function HomePage() {
             <p className="small hero-in text-faded" style={{ ["--d" as string]: "0ms" }}>
               {products.length} places · Hoodies {money(HOODIE)} · Tees {money(TEE)}
             </p>
-            <h1 className="display hero-in mt-3 text-[12.5vw] leading-[0.95] sm:text-[72px] lg:text-[96px] xl:text-[108px]" style={{ ["--d" as string]: "60ms" }}>
-              Merch from places that don&rsquo;t exist.
+            <h1 className="display hero-in mt-3 text-[14vw] leading-[0.95] sm:text-[80px] lg:text-[104px] xl:text-[116px]" style={{ ["--d" as string]: "60ms" }}>
+              If you know,
+              <br /> you know.
             </h1>
-            <p className="hero-in mt-5 hidden max-w-[44ch] text-[19px] text-faded sm:block" style={{ ["--d" as string]: "140ms" }}>
-              The inns, shops and wharves you spent your teens in, drawn like old shop signs and printed on heavyweight hoodies and tees. No logos. If you know, you know.
+            <p className="hero-in mt-4 max-w-[44ch] text-[17px] text-faded sm:mt-5 sm:text-[19px]" style={{ ["--d" as string]: "140ms" }}>
+              Hoodies and tees from the places you lost a summer to. <span className="hidden sm:inline">No logos, no names, nothing to explain. </span>Everyone else sees a nice old lodge hoodie. You see 2004.
             </p>
             <div className="hero-in mt-8 hidden flex-wrap items-center gap-3 lg:flex" style={{ ["--d" as string]: "220ms" }}>
               <Magnetic>
                 <Link href="#shop" className="btn-primary !px-8 !py-4 !text-[17px]">
-                  Shop all {products.length} places
+                  Find your place
                 </Link>
               </Magnetic>
-              <Link href="#look-closer" className="sweep ml-3 text-faded hover:text-bone">
-                Look closer
+              <Link href="#two-readings" className="sweep ml-3 text-faded hover:text-bone">
+                What everyone else sees
               </Link>
             </div>
             <ul className="small hero-in mt-10 hidden gap-x-6 gap-y-2 text-faded lg:flex lg:flex-wrap" style={{ ["--d" as string]: "300ms" }}>
-              <li className="tick">Printed to order</li>
+              <li className="tick">Printed for you</li>
               {freeAu && <li className="tick">Free AU shipping over {money(freeAu)}</li>}
               <li className="tick">Apple Pay · Google Pay · card</li>
             </ul>
@@ -77,10 +79,10 @@ export default function HomePage() {
 
           <div className="hero-in lg:hidden" style={{ ["--d" as string]: "200ms" }}>
             <Link href="#shop" className="btn-primary w-full !py-4 !text-[17px]">
-              Shop all {products.length} places
+              Find your place
             </Link>
             <p className="small mt-3 text-center text-faded">
-              Printed to order{freeAu ? ` · Free AU shipping over ${money(freeAu)}` : ""}
+              Printed for you{freeAu ? ` · Free AU shipping over ${money(freeAu)}` : ""}
             </p>
           </div>
         </div>
@@ -89,9 +91,9 @@ export default function HomePage() {
       {/* ------------------------------------------------------------ shop */}
       <section id="shop" className="mx-auto w-full max-w-page scroll-mt-24 px-5 pt-10 sm:px-8 sm:pt-16" data-compass="shop">
         <div className="mb-8 flex flex-col gap-2 sm:mb-10">
-          <SplitText as="h2" text="Pick your place." className="display block text-[40px] sm:text-[60px]" stagger={60} />
+          <SplitText as="h2" text="Which one stopped you?" className="display block text-[40px] sm:text-[60px]" stagger={60} />
           <p className="max-w-[52ch] text-faded" data-reveal>
-            Big engraved print on the back, the place&rsquo;s crest small on the chest. Hover or tap through to see both.
+            That one. The big print goes on the back, the crest small on the chest. You don&rsquo;t need us to tell you what it is.
           </p>
         </div>
         <ShopFilter filters={filters} prices={{ hoodie: money(HOODIE), tee: money(TEE) }}>
@@ -99,14 +101,37 @@ export default function HomePage() {
         </ShopFilter>
       </section>
 
-      {/* ------------------------------------------------------------ insight */}
-      <section className="mx-auto mt-28 w-full max-w-page px-5 sm:mt-40 sm:px-8" data-compass="insight">
-        <p className="display-soft max-w-[18ch] text-[34px] leading-[1.08] text-faded sm:text-[64px]" data-reveal>
-          To anyone else, it&rsquo;s a nice old lodge hoodie.
+      {/* ------------------------------------------------------------ two readings */}
+      <section id="two-readings" className="mx-auto mt-28 w-full max-w-page scroll-mt-24 px-5 sm:mt-40 sm:px-8" data-compass="readings">
+        <SplitText as="h2" text="Two ways to read a hoodie." className="display block text-[36px] sm:text-[56px]" stagger={60} />
+        <p className="mt-4 max-w-[48ch] text-faded" data-reveal>
+          Every design works twice. Once for the people on the bus, and once for you.
         </p>
-        <p className="display mt-3 text-[48px] leading-none sm:text-[104px]" data-reveal style={{ ["--d" as string]: "200ms" }}>
-          To you, it&rsquo;s 2004.
-        </p>
+        <ul className="mt-12 flex flex-col">
+          {readings.map((p, i) => (
+            <li key={p.slug} className="grid grid-cols-[72px_1fr] items-center gap-5 border-t border-seam py-6 sm:grid-cols-[120px_1fr_1fr] sm:gap-10" data-reveal style={{ ["--d" as string]: `${i * 90}ms` }}>
+              <Link href={`/products/${p.slug}`} className="tile relative block aspect-square overflow-hidden" aria-label={p.name}>
+                <Image src={asset(p.garments[0].image)} alt="" fill sizes="120px" className="object-contain" />
+              </Link>
+              <div>
+                <p className="small text-faded">They see</p>
+                <p className="display-soft mt-1 text-[22px] leading-snug text-faded sm:text-[26px]">{p.cover}</p>
+              </div>
+              <div className="col-start-2 sm:col-start-auto">
+                <p className="small text-faded">You see</p>
+                <p className="mt-1 text-[20px] leading-snug sm:text-[24px]">{p.line}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-20 sm:mt-28">
+          <p className="display-soft max-w-[18ch] text-[34px] leading-[1.08] text-faded sm:text-[64px]" data-reveal>
+            To anyone else, it&rsquo;s a nice old lodge hoodie.
+          </p>
+          <p className="display mt-3 text-[48px] leading-none sm:text-[104px]" data-reveal style={{ ["--d" as string]: "200ms" }}>
+            To you, it&rsquo;s 2004.
+          </p>
+        </div>
       </section>
 
       {/* ------------------------------------------------------------ look closer */}
@@ -115,20 +140,20 @@ export default function HomePage() {
           <Loupe src={asset(`/artwork/${featured.slug}.png`)} className="mx-auto aspect-[2/3] w-full max-w-[520px] overflow-hidden bg-black">
             <Image src={asset(`/artwork/${featured.slug}.png`)} alt={`${featured.name} artwork`} fill sizes="(min-width: 1024px) 40vw, 90vw" className="object-cover" />
           </Loupe>
-          <p className="small mt-3 text-center text-faded">Drag across it. {featured.name}, {featured.place}.</p>
+          <p className="small mt-3 text-center text-faded">Drag across it. You&rsquo;ll find the lighthouse.</p>
         </div>
         <div className="flex flex-col gap-10">
           <div>
-            <SplitText as="h2" text="Drawn from the town, not the box art." className="display block text-[36px] sm:text-[52px]" stagger={50} />
+            <SplitText as="h2" text="Every line is somewhere you’ve stood." className="display block text-[36px] sm:text-[52px]" stagger={50} />
             <p className="mt-5 max-w-[46ch] text-[18px] text-faded" data-reveal>
-              Every design is drawn line by line from the place itself — the rooflines, the bridges, the lighthouse in the fog — then set like a 1970s lodge would have printed its own merch: a name, an address line, an est. date.
+              Drawn from the place itself — the thatch, the wharf, the stilt houses in the fog — then set the way an old lodge printed its own shirts: a name, an address, an est. date. Nothing that gives it away. Nothing you need.
             </p>
           </div>
           <dl className="grid grid-cols-3 gap-6 border-t border-seam pt-8" data-reveal>
             {[
               ["places so far", products.length],
               ["logos", 0],
-              ["characters", 0],
+              ["explanations", 0],
             ].map(([label, value]) => (
               <div key={label} className="flex flex-col-reverse">
                 <dt className="small text-faded">{label}</dt>
@@ -138,9 +163,9 @@ export default function HomePage() {
           </dl>
           <ol className="flex flex-col gap-6">
             {[
-              ["Pick a place", "Hoodie or tee, your size. One colour per design, matched to the ink."],
-              ["Printed for you", "It goes on the press after you order, so nothing sits in a warehouse. 2–5 business days."],
-              ["Shipped from nearby", "From the print house closest to you, Brisbane for most of Australia, with tracking."],
+              ["Pick yours", "Hoodie or tee, your size. Each design comes in one colour, matched to the ink."],
+              ["We print it for you", "It goes on the press once you order, so nothing sits in a warehouse waiting. 2–5 business days."],
+              ["It turns up", "From the print house nearest you, Brisbane for most of Australia, with tracking. Wear it somewhere someone will notice."],
             ].map(([t, d], i) => (
               <li key={t} className="grid grid-cols-[44px_1fr] gap-4" data-reveal style={{ ["--d" as string]: `${i * 90}ms` }}>
                 <span className="display-soft text-[28px] leading-none text-faded">{String(i + 1).padStart(2, "0")}</span>
@@ -157,9 +182,9 @@ export default function HomePage() {
       {/* ------------------------------------------------------------ faq */}
       <section className="mx-auto mt-28 grid w-full max-w-page gap-8 px-5 sm:mt-40 sm:px-8 lg:grid-cols-[1fr_1.4fr] lg:gap-20" data-compass="faq">
         <div>
-          <SplitText as="h2" text="Before you ask." className="display block text-[36px] sm:text-[52px]" stagger={60} />
+          <SplitText as="h2" text="Questions from people who were there." className="display block text-[36px] sm:text-[52px]" stagger={60} />
           <p className="mt-4 max-w-[36ch] text-faded" data-reveal>
-            Anything else: <a className="link" href={`mailto:${site.email}`}>{site.email}</a>. A person answers.
+            Anything else: <a className="link" href={`mailto:${site.email}`}>{site.email}</a>. A person answers, and they were there too.
           </p>
         </div>
         <Faq />
@@ -178,15 +203,15 @@ export default function HomePage() {
           </Marquee>
         </div>
         <div className="mx-auto w-full max-w-page px-5 pt-20 sm:px-8">
-          <SplitText as="p" text="If you know, you know." className="display-soft block text-[13vw] text-bone sm:text-[96px] lg:text-[128px]" stagger={90} />
+          <SplitText as="p" text="You were there. Wear it." className="display-soft block text-[13vw] text-bone sm:text-[96px] lg:text-[128px]" stagger={90} />
           <div className="mt-8 flex flex-wrap items-center gap-6" data-reveal style={{ ["--d" as string]: "300ms" }}>
             <Magnetic>
               <Link href="#shop" className="btn-primary !px-8 !py-4 !text-[17px]">
-                Find your place
+                Find yours
               </Link>
             </Magnetic>
             <Link href="/about" className="sweep text-faded hover:text-bone">
-              Why this exists
+              Why there&rsquo;s no logo
             </Link>
           </div>
         </div>

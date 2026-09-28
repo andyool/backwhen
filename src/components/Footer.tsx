@@ -10,7 +10,7 @@ export default function Footer() {
       <div className="mx-auto grid w-full max-w-page gap-10 px-5 pt-16 sm:px-8 md:grid-cols-[2fr_1fr_1fr]">
         <div data-reveal>
           <p className="wordmark text-[22px]">{site.wordmark}</p>
-          <p className="mt-4 max-w-[40ch] text-faded">{site.tagline} Printed to order, shipped from the nearest print house to you.</p>
+          <p className="mt-4 max-w-[40ch] text-faded">{site.tagline} Everyone else just thinks it&rsquo;s a nice hoodie, and that&rsquo;s fine.</p>
         </div>
         <div className="flex flex-col items-start gap-2" data-reveal style={{ ["--d" as string]: "80ms" }}>
           {collections.map((c) => (
@@ -19,7 +19,7 @@ export default function Footer() {
             </Link>
           ))}
           <Link href="/about" className="sweep text-faded hover:text-bone">
-            About
+            Why no logos
           </Link>
         </div>
         <div className="flex flex-col items-start gap-2" data-reveal style={{ ["--d" as string]: "160ms" }}>

@@ -43,7 +43,7 @@ export default function PlaceRequest({ collection }: { collection: string }) {
   if (state === "sent") {
     return (
       <p className="text-faded" aria-live="polite">
-        Noted. If it gets drawn, it turns up here first.
+        Noted. If it gets drawn, you&rsquo;ll recognise it.
       </p>
     );
   }
@@ -51,7 +51,7 @@ export default function PlaceRequest({ collection }: { collection: string }) {
   return (
     <form onSubmit={submit} className="max-w-[52ch]">
       <label htmlFor={`request-${collection}`} className="block text-[18px]">
-        Missing a place? Name it.
+        Which place are we missing? If enough people who were there ask, it gets drawn.
       </label>
       <div className="mt-3 flex gap-2">
         <input
@@ -63,7 +63,7 @@ export default function PlaceRequest({ collection }: { collection: string }) {
             setText(e.target.value.slice(0, MAX));
             if (state === "error") setState("idle");
           }}
-          placeholder="The shop, inn or outpost, and where it is"
+          placeholder="The shop, inn or wharf, and where it is"
           autoComplete="off"
           className="min-w-0 flex-1 rounded-[2px] bg-flannel px-4 py-3 text-bone placeholder:text-faded/60"
         />
@@ -72,7 +72,7 @@ export default function PlaceRequest({ collection }: { collection: string }) {
         </button>
       </div>
       <div className="small mt-2 flex justify-between gap-4 text-faded">
-        <span aria-live="polite">{state === "error" ? `Couldn't send. Email ${site.email} instead.` : "One line is plenty."}</span>
+        <span aria-live="polite">{state === "error" ? `Couldn't send. Email ${site.email} instead.` : "One line. You know the one."}</span>
         <span className="tabular-nums">
           {text.length}/{MAX}
         </span>

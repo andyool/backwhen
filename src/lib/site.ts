@@ -3,9 +3,9 @@ export const site = {
   shortName: "Backwhen",
   /** Lower-case wordmark used in the header and footer */
   wordmark: "backwhen",
-  tagline: "Merch from places that don't exist.",
+  tagline: "If you know, you know.",
   description:
-    "Heavyweight hoodies and tees printed with the inns, shops and outposts you spent your teens in. Cream ink, dark fleece, no logos.",
+    "Heavyweight hoodies and tees from the inns, shops and wharves you spent your teens in. No logos, no names, nothing explained. The right people will know.",
   email: "hello@backwhen.com",
   instagram: "https://instagram.com/backwhen",
   currency: "AUD",

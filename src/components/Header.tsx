@@ -47,13 +47,15 @@ export default function Header() {
   const nav = [
     { href: "/shop", label: "Shop all" },
     ...collections.map((c) => ({ href: `/collections/${c.slug}`, label: c.name })),
-    { href: "/about", label: "About" },
+    { href: "/about", label: "Why no logos" },
   ];
 
   return (
     <>
       <p className="announce">
-        <span>Printed to order, shipped in about a week</span>
+        <span>
+          No logos. Nothing explained.<span className="announce-extra"> At your door in about a week.</span>
+        </span>
         {freeAu && <span className="announce-extra">Free shipping in Australia over {money(freeAu)}</span>}
       </p>
       <header ref={ref} className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
